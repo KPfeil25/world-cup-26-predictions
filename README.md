@@ -13,4 +13,4 @@ Can we build a predictive model that leverages past world cup data alongside var
 
 ## Data:
 - [Fjelstul World Cup Database](https://github.com/jfjelstul/worldcup)
-- Weather Dataset (multiple options)
+- Weather Dataset (multiple options, [Accuweather](https://www.accuweather.com/en/us/seattle/98104/february-weather/351409) is one)
