@@ -1,4 +1,6 @@
 # world-cup-26-predictions
+## Status Badge
+[![build_test](https://github.com/KPfeil25/world-cup-26-predictions/actions/workflows/build_test.yml/badge.svg?branch=main&event=status)](https://github.com/KPfeil25/world-cup-26-predictions/actions/workflows/build_test.yml)
 
 ## Project Type:
 The project will be **analytical** in nature and we will also be **creating a tool** to demonstrate the predictive element of our project.
