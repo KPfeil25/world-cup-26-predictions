@@ -61,7 +61,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           # Use the environment name from your environment.yml file
-          activate-environment: ci_example
+          activate-environment: world-cup-predictions-env
           # The name of the environment file you want conda to use
           environment-file: environment.yml
           # Whether you want conda to automatically update the conda
@@ -87,7 +87,7 @@ jobs:
       # Next step: run the unit tests with code coverage.
       - name: Unit tests
         run: |
-          cd entropy
+          cd src
           coverage run -m unittest discover
           coverage report
           coverage lcov
@@ -104,8 +104,8 @@ jobs:
         uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          base-path: entropy
-          path-to-lcov: entropy/coverage.lcov
+          base-path: src
+          path-to-lcov: src/coverage.lcov
           # The following two options are needed for "parallel"
           # runs - ie if you have a matrix of python versions.
           # This holds off on reporting code coverage to
