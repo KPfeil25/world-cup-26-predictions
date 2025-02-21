@@ -1,16 +1,9 @@
 name: world-cup-predictions-env
 channels:
   - defaults
-  - https://repo.anaconda.com/pkgs/main
-  - https://repo.anaconda.com/pkgs/r
 dependencies:
   - numpy=1.24.3
-  - numpy-base=1.24.3
-  - openssl=3.0.15
-  - packaging=24.1
   - pandas=2.0.3
   - pip=24.2
   - plotly=5.24.1
   - python=3.8.20
-  - python-dateutil=2.9.0post0
-  - python-tzdata=2023.3
