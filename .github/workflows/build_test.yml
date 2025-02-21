@@ -75,7 +75,7 @@ jobs:
       # use locally).
       - name: Install additional development dependencies
         run: |
-          conda install --yes coverage coverage-lcov
+          conda install --yes coverage
 
       # If there are any other steps in order for your tests to
       # run successfully, you can add those steps here!
