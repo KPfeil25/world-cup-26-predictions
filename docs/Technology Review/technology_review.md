@@ -19,6 +19,8 @@ if name == '**main**':
     app.run(debug=True)
 ```
 
+![sample dash dashboard](dash_basic_example.png)
+
 ### Streamlit:
 
 Another tool that could solve this problem is Streamlit. Streamlit is another Python library that gives users a quick option for starting a web application that can show data analytics. This tool gives the user fewer customization options, but it is exceptionally quick. This tool also does not require the user to have an understanding of the aforementioned web development concepts. Streamlit is its own company that was founded in 2018\.
@@ -32,6 +34,8 @@ import numpy as np
 
 st.title('Hello World')
 ```
+
+![sample streamlit dashboard](streamlit_basic_example.png)
 
 ### Decision:
 
@@ -64,6 +68,8 @@ fig.update*layout(_xaxis_title*="Forward", _yaxis_title_="Appearances")
 fig.show()
 ```
 
+![sample plotly visual](plotly_basic_example.png)
+
 Plotly generates an interactive chart with built-in support for tooltips, zooming, and more—refer to the top right corner of the plot area. The code is concise and returns a figure object that can be directly embedded in a web application.
 
 ```python
@@ -87,6 +93,8 @@ plt.tight_layout()
 plt.show()
 ```
 
+![sample seaborn visual](seaborn_basic_example.png)
+
 Seaborn generates a high-quality static plot with appealing themes and minimal code. While it lacks built-in interactivity, its static nature is often perfect for printed reports or exploratory analysis in notebooks. We can also observe that, with roughly the same amount of code, Plotly accomplishes a great deal already.
 
 ### Decision:
@@ -101,9 +109,13 @@ Predicting the outcome of football matches (and potentially producing other pred
 
 Initially authored by David Cournapeau in 2007, the library is currently managed by INRIA and is a popular ML library focusing on classical models such as random forests, regression models, etc. It is relatively lightweight and easy to set up but struggles with complex data.
 
+![baseline sklearn model](sklearn_baseline_model.png)
+
 ### XGBoost:
 
 Created by Tianqi Chen of the DMLC community, this library is focused on gradient-boosting techniques and is known to perform well on tabular data like our use case. However, it is slightly harder to set up and train due to the importance and complexity of hyperparameter tuning.
+
+![baseline xgboost model](xgboost_baseline_model.png)
 
 ### Decision:
 
