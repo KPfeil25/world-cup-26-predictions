@@ -1,78 +1,25 @@
 import streamlit as st
-import time
-import numpy as np
-import pandas as pd
-import streamlit.components.v1 as components
-import json
-import plotly.express as px
-import os
-from data_manager import (
-    load_data,
-    create_advanced_player_stats
-)
+from player_analytics.player_analytics_tab import run_analytics_tab
 
-# Logging tool, purely used for debugging
-def log_to_console(message: str) -> None:
-    js_code = f"""
-<script>
-    console.log({json.dumps(message)});
-</script>
-"""
-    components.html(js_code)
-    
-st.set_page_config(page_title="Analysis Tool", page_icon="📈")
+def main():
+    """
+    Main entry point for the World Cup Player Analytics app.
+    Sets up a tabbed interface with a Home tab, Player Analytics tab, and an About tab.
+    """
 
-st.markdown("# Analysis Tool")
-st.sidebar.header("Analysis Tool")
-st.write(
-    """This is where the analysis will take place"""
-)
+    st.set_page_config(page_title="World Cup Player Analytics", layout="wide")
+    st.title("World Cup 2026 Player Analytics")
 
-data_path = os.path.join(os.path.dirname(os.getcwd()), "world-cup-26-predictions", "world_cup_26_predictions","data")
-df = pd.read_csv(data_path + "/teams.csv")
+    # Create tabs for navigation
+    tabs = st.tabs(["Player Analytics", "Team Analytics"])
 
-countries = st.multiselect(
-        "Choose countries", list(df['team_name'])
-    )
+    with tabs[0]:
+        st.header("Player Analytics")
+        # Displays the enhanced analytics page
+        run_analytics_tab()
 
-dataframes = load_data(data_path)
-all_stats = create_advanced_player_stats(dataframes)
+    with tabs[1]:
+        st.header("Team Analytics")
 
-gender = st.multiselect(
-    "Select gender", list(("Male", "Female"))
-)
-
-# Will be refactoring this -- I know the repeated code is ugly but function > code style rn :)
-names_and_ko_goals = all_stats[['full_name', 'knockout_goals', 'female']]
-if not gender:
-    filtered_df = names_and_ko_goals.nlargest(10, 'knockout_goals')
-    figure = px.bar(filtered_df, x='full_name', y='knockout_goals', title='Top 10 scorers in World Cup history')
-    st.plotly_chart(figure)
-else:
-    if (gender[0] != 'Female'):
-        filtered_df = names_and_ko_goals[names_and_ko_goals['female'] == False]
-        filtered_df = filtered_df.nlargest(10, 'knockout_goals')
-        figure = px.bar(filtered_df, x='full_name', y='knockout_goals', title='Top 10 male scorers in World Cup history')
-        st.plotly_chart(figure)
-    else:
-        filtered_df = names_and_ko_goals[names_and_ko_goals['female'] == True]
-        filtered_df = filtered_df.nlargest(10, 'knockout_goals')
-        figure = px.bar(filtered_df, x='full_name', y='knockout_goals', title='Top 10 female scorers in World Cup history')
-        st.plotly_chart(figure)
-
-names_and_apps = all_stats[['full_name', 'total_appearances', 'female']]
-if not gender:
-    filtered_df = names_and_apps.nlargest(10, 'total_appearances')
-    figure2 = px.bar(filtered_df, x='full_name', y='total_appearances', title='Top 10 players with most appearances in World Cup history')
-    st.plotly_chart(figure2)
-else:
-    if (gender[0] != 'Female'):
-        filtered_df = names_and_apps[names_and_apps['female'] == False]
-        filtered_df = filtered_df.nlargest(10, 'total_appearances')
-        figure2 = px.bar(filtered_df, x='full_name', y='total_appearances', title='Top 10 male players with most appearances in World Cup history')
-        st.plotly_chart(figure2)
-    else:
-        filtered_df = names_and_apps[names_and_apps['female'] == True]
-        filtered_df = filtered_df.nlargest(10, 'total_appearances')
-        figure2 = px.bar(filtered_df, x='full_name', y='total_appearances', title='Top 10 female players with most appearances in World Cup history')
-        st.plotly_chart(figure2)
+if __name__ == "__main__":
+    main()
