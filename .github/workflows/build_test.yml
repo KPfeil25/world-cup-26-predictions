@@ -60,8 +60,8 @@ jobs:
         uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          base-path: world-cup-26-predictions
-          path-to-lcov: world-cup-26-predictions/coverage.lcov
+          base-path: world_cup_26_predictions
+          path-to-lcov: world_cup_26_predictions/coverage.lcov
 
   finish:
      needs: build_test
