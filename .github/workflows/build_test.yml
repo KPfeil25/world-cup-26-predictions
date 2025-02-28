@@ -45,7 +45,7 @@ jobs:
       # 5) Run tests & generate coverage reports.
       - name: Unit tests
         run: |
-          cd world-cup-26-predictions     
+          cd world_cup_26_predictions     
           coverage run -m unittest discover
           coverage report
           coverage lcov
