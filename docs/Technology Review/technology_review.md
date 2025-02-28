@@ -19,7 +19,7 @@ if name == '**main**':
     app.run(debug=True)
 ```
 
-![sample dash dashboard](dash_basic_example.png)
+![sample dash dashboard](https://github.com/KPfeil25/world-cup-26-predictions/blob/main/docs/Technology%20Review/dash_basic_example.PNG)
 
 ### Streamlit:
 
@@ -35,7 +35,7 @@ import numpy as np
 st.title('Hello World')
 ```
 
-![sample streamlit dashboard](streamlit_basic_example.png)
+![sample streamlit dashboard](https://github.com/KPfeil25/world-cup-26-predictions/blob/main/docs/Technology%20Review/streamlit_basic_example.PNG)
 
 ### Decision:
 
@@ -68,7 +68,7 @@ fig.update*layout(_xaxis_title*="Forward", _yaxis_title_="Appearances")
 fig.show()
 ```
 
-![sample plotly visual](plotly_basic_example.png)
+![sample plotly visual](https://github.com/KPfeil25/world-cup-26-predictions/blob/main/docs/Technology%20Review/plotly_basic_example.PNG)
 
 Plotly generates an interactive chart with built-in support for tooltips, zooming, and more—refer to the top right corner of the plot area. The code is concise and returns a figure object that can be directly embedded in a web application.
 
@@ -93,7 +93,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![sample seaborn visual](seaborn_basic_example.png)
+![sample seaborn visual](https://github.com/KPfeil25/world-cup-26-predictions/blob/main/docs/Technology%20Review/seaborn_basic_example.PNG)
 
 Seaborn generates a high-quality static plot with appealing themes and minimal code. While it lacks built-in interactivity, its static nature is often perfect for printed reports or exploratory analysis in notebooks. We can also observe that, with roughly the same amount of code, Plotly accomplishes a great deal already.
 
@@ -109,13 +109,13 @@ Predicting the outcome of football matches (and potentially producing other pred
 
 Initially authored by David Cournapeau in 2007, the library is currently managed by INRIA and is a popular ML library focusing on classical models such as random forests, regression models, etc. It is relatively lightweight and easy to set up but struggles with complex data.
 
-![baseline sklearn model](sklearn_baseline_model.png)
+![baseline sklearn model](https://github.com/KPfeil25/world-cup-26-predictions/blob/main/docs/Technology%20Review/sklearn_baseline_model.PNG)
 
 ### XGBoost:
 
 Created by Tianqi Chen of the DMLC community, this library is focused on gradient-boosting techniques and is known to perform well on tabular data like our use case. However, it is slightly harder to set up and train due to the importance and complexity of hyperparameter tuning.
 
-![baseline xgboost model](xgboost_baseline_model.png)
+![baseline xgboost model](https://github.com/KPfeil25/world-cup-26-predictions/blob/main/docs/Technology%20Review/xgboost_baseline_model.PNG)
 
 ### Decision:
 
