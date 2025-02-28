@@ -19,7 +19,7 @@ if name == '**main**':
     app.run(debug=True)
 ```
 
-![sample dash dashboard](dash_basic_example.png)
+![sample dash dashboard](https://github.com/KPfeil25/world-cup-26-predictions/blob/main/docs/Technology%20Review/dash_basic_example.PNG)
 
 ### Streamlit:
 
