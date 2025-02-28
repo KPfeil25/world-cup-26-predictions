@@ -5,10 +5,10 @@ import pandas as pd
 import streamlit.components.v1 as components
 import json
 import plotly.express as px
+import os
 from data_manager import (
     load_data,
-    create_advanced_player_stats,
-    filter_by_gender
+    create_advanced_player_stats
 )
 
 # Logging tool, purely used for debugging
@@ -27,13 +27,15 @@ st.sidebar.header("Analysis Tool")
 st.write(
     """This is where the analysis will take place"""
 )
-df = pd.read_csv('data/teams.csv')
+
+data_path = os.path.join(os.path.dirname(os.getcwd()), "world-cup-26-predictions", "world_cup_26_predictions","data")
+df = pd.read_csv(data_path + "/teams.csv")
 
 countries = st.multiselect(
         "Choose countries", list(df['team_name'])
     )
 
-dataframes = load_data()
+dataframes = load_data(data_path)
 all_stats = create_advanced_player_stats(dataframes)
 
 gender = st.multiselect(
