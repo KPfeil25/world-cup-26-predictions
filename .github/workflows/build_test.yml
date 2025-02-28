@@ -1,0 +1,75 @@
+name: build_test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build_test:
+    runs-on: ubuntu-latest
+    
+    # Ensure conda activation works properly with the right shell setup.
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    steps:
+      # 1) Check out your code
+      - uses: actions/checkout@v3
+
+      # 2) Set up Python (though we'll rely on conda for the actual environment)
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+
+      # 3) Set up your conda environment from environment.yml
+      - name: Set up conda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          environment-file: environment.yml
+          activate-environment: world-cup-predictions-env
+          auto-update-conda: true
+          python-version: '3.8'  # matches what's pinned in environment.yml
+          auto-activate-base: false
+
+      # 4) Install coverage (or any other dev/test dependencies not in environment.yml)
+      - name: Install additional development dependencies
+        run: |
+          conda install --yes coverage
+
+      # 5) Run tests & generate coverage reports.
+      - name: Unit tests
+        run: |
+          cd world-cup-26-predictions     
+          coverage run -m unittest discover
+          coverage report
+          coverage lcov
+          
+      # 6) Run pylint
+      #- name: Lint with pylint
+      #  run: |
+      #       pylint world-cup-26-predictions/**/*.py
+
+      # 7) Report code coverage to Coveralls
+      - name: Report code coverage to Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          base-path: world-cup-26-predictions
+          path-to-lcov: world-cup-26-predictions/coverage.lcov
+
+  finish:
+     needs: build_test
+     if: ${{ always() }}
+     runs-on: ubuntu-latest
+     steps:
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel-finished: true
