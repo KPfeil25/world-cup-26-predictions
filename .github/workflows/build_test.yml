@@ -51,9 +51,9 @@ jobs:
           coverage lcov
           
       # 6) Run pylint
-      #- name: Lint with pylint
-      #  run: |
-      #       pylint world-cup-26-predictions/**/*.py
+      - name: Lint with pylint
+        run: |
+             pylint world_cup_26_predictions/**/*.py
 
       # 7) Report code coverage to Coveralls
       - name: Report code coverage to Coveralls
