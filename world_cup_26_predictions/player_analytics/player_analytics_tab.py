@@ -15,7 +15,7 @@ import streamlit as st
 from data_manager import (
     load_data, create_advanced_player_stats, filter_players
 )
-from player_analytics import player_analytics as visuals
+import player_analytics.player_analytics as visuals
 
 
 @st.cache_data
