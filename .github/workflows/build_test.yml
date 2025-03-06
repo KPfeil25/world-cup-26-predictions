@@ -3,10 +3,10 @@ name: build_test
 on:
   push:
     branches:
-      - pylint-sytle-check
+      - main
   pull_request:
     branches:
-      - pylint-sytle-check
+      - main
 
 jobs:
   build_test:
@@ -22,10 +22,10 @@ jobs:
       - uses: actions/checkout@v3
 
       # 2) Set up Python (though we'll rely on conda for the actual environment)
-      - name: Set up Python 3.8
+      - name: Set up Python 3.12
         uses: actions/setup-python@v4
         with:
-          python-version: '3.8'
+          python-version: '3.12'
 
       # 3) Set up your conda environment from environment.yml
       - name: Set up conda
@@ -34,7 +34,7 @@ jobs:
           environment-file: environment.yml
           activate-environment: world-cup-predictions-env
           auto-update-conda: true
-          python-version: '3.8'  # matches what's pinned in environment.yml
+          python-version: '3.12'  # matches what's pinned in environment.yml
           auto-activate-base: false
 
       # 4) Install coverage (or any other dev/test dependencies not in environment.yml)
