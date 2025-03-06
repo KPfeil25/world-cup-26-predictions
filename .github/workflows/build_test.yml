@@ -3,10 +3,10 @@ name: build_test
 on:
   push:
     branches:
-      - main
+      - pylint-sytle-check
   pull_request:
     branches:
-      - main
+      - pylint-sytle-check
 
 jobs:
   build_test:
