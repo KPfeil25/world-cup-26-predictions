@@ -1,14 +1,21 @@
+# pylint: disable=too-many-locals, too-many-branches, too-many-statements
 """
+Due to the interactive nature of our Streamlit app, the analytics tab
+function manages numerous UI elements, data manipulations, and user scenarios.
+This naturally results in a higher number of local variables, branches,
+and statements. We disable these checks to preserve the app’s
+flexibility and ensure comprehensive functionality.
+
 Streamlit app for Player Analytics, leveraging data_manager and player_analytics modules.
 """
 
 import streamlit as st
 
-# Local imports
+# Local imports (relative import from the same package)
 from data_manager import (
-    load_data, create_advanced_player_stats, filter_players)
+    load_data, create_advanced_player_stats, filter_players
+)
 from player_analytics import player_analytics as visuals
-
 
 
 @st.cache_data
@@ -20,6 +27,30 @@ def get_player_stats():
     data_frames = load_data()
     return create_advanced_player_stats(data_frames)
 
+
+def get_default_two_players(gender, all_names):
+    """
+    Returns up to 2 default player names that exist in 'all_names'.
+    If the candidate defaults aren't available, fallback to
+    the first two players in 'all_names' if possible.
+    """
+    if gender == "Women":
+        candidate_defaults = ["Marta", "Megan Rapinoe", "Alex Morgan"]
+    elif gender == "Men":
+        candidate_defaults = ["Lionel Messi", "Cristiano Ronaldo", "Pelé"]
+    else:
+        candidate_defaults = ["Lionel Messi", "Cristiano Ronaldo"]
+
+    intersected = [p for p in candidate_defaults if p in all_names]
+    if len(intersected) >= 2:
+        return intersected[:2]
+    if len(all_names) >= 2:
+        return all_names[:2]
+    if len(all_names) == 1:
+        return all_names
+    return []
+
+
 def run_analytics_tab():
     """
     Displays a Player Analytics page with:
@@ -30,31 +61,12 @@ def run_analytics_tab():
       - Misc. Fun/Trivia
     """
 
-    def get_default_two_players(gender, all_names):
-        """
-        Returns up to 2 default player names that exist in 'all_names'.
-        If the candidate defaults aren't available, fallback to
-        the first two players in 'all_names' if possible.
-        """
-        if gender == "Women":
-            candidate_defaults = ["Marta", "Megan Rapinoe", "Alex Morgan"]
-        elif gender == "Men":
-            candidate_defaults = ["Lionel Messi", "Cristiano Ronaldo", "Pelé"]
-        else:
-            candidate_defaults = ["Lionel Messi", "Cristiano Ronaldo"]
-
-        intersected = [p for p in candidate_defaults if p in all_names]
-        if len(intersected) >= 2:
-            return intersected[:2]
-        if len(all_names) >= 2:
-            return all_names[:2]
-        if len(all_names) == 1:
-            return all_names
-        return []
-
     st.header("Player Analytics")
     player_stats = get_player_stats()
 
+    # =====================
+    #         FILTERS
+    # =====================
     with st.expander("Filters", expanded=False):
         gender_option = st.selectbox("Filter by Gender:", ["All", "Men", "Women"], index=0)
         continent_list = ["All"] + sorted(player_stats["continent"].unique().tolist())
@@ -72,6 +84,9 @@ def run_analytics_tab():
 
     top_n = st.slider("Number of Players in Top Lists:", 5, 30, 10)
 
+    # =====================
+    #  KEY LEADERBOARDS
+    # =====================
     st.subheader("Key Leaderboards & Metrics")
     col_left, col_right = st.columns(2)
 
@@ -114,6 +129,9 @@ def run_analytics_tab():
         if fig_awards:
             st.plotly_chart(fig_awards, use_container_width=True)
 
+    # =====================
+    #  EXTRA ANALYTICS
+    # =====================
     with st.expander("Show More Analytics", expanded=False):
         col_ex1, col_ex2 = st.columns(2)
 
@@ -197,6 +215,9 @@ def run_analytics_tab():
             if fig_fw:
                 st.plotly_chart(fig_fw, use_container_width=True)
 
+    # =====================
+    #   TWO-PLAYER COMP
+    # =====================
     st.markdown("---")
     st.subheader("Two-Player Comparison")
 
@@ -248,6 +269,9 @@ def run_analytics_tab():
                 if radar_fig:
                     st.plotly_chart(radar_fig, use_container_width=True)
 
+    # =====================
+    #  CLUTCH & IMPACT
+    # =====================
     st.markdown("---")
     st.subheader("Clutch Scorers & Impact Players")
     col_clutch_one, col_clutch_two = st.columns(2)
@@ -265,6 +289,9 @@ def run_analytics_tab():
         else:
             st.info("No data for Impact Players.")
 
+    # =====================
+    #       TRIVIA
+    # =====================
     st.markdown("---")
     st.subheader("Men & Women World Cup Trivia")
 

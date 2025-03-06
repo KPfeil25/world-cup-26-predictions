@@ -1,16 +1,28 @@
-import streamlit as st
-import pandas as pd
-import os
+# pylint: disable=invalid-name
+# This is a Page Name and its first letter should be in Capital Case.
+"""
+This file is the homepage for the World Cup 2026 Analysis and Predictions app.
+It is the first page that users see when they visit the app. 
+It provides an overview of the app's purpose and features a map of the 
+host cities for the 2026 World Cup.
+"""
+
 import json
+
+import streamlit as st
 import streamlit.components.v1 as components
+import pandas as pd
+
 
 def log_to_console(message: str) -> None:
+    """Log a message to the browser's console using JavaScript."""
     js_code = f"""
 <script>
     console.log({json.dumps(message)});
 </script>
 """
     components.html(js_code)
+
 
 st.set_page_config(
     page_title="Homepage",
@@ -20,15 +32,16 @@ st.write("# World Cup 2026 Analysis and Predictions ⚽️")
 
 st.sidebar.success("Select an option above..")
 
-
 st.markdown(
     """
-    The 2026 World Cup is coming to North America! With the US (Seattle included!), Mexico, and Canada all hosting matches
-    it will be an exciting and busy time across the continent. If you are looking for a tool to use to explore who has
-    previously performed well or look to the future and see what some machine learning can predict look no further.
+    The 2026 World Cup is coming to North America! With the US (Seattle included!)
+    , Mexico, and Canada all hosting matches,
+    it will be an exciting and busy time across the continent. 
+    If you are looking for a tool to use to explore who has
+    previously performed well or look to the future and see what
+    some machine learning can predict, look no further. 
     The map below shows all of the host cities.
-
-"""
+    """
 )
 
 locations = [
@@ -49,5 +62,6 @@ locations = [
     {'lat': 47.6061, 'lon': -122.3328},
     {'lat': 37.3387, 'lon': -121.8853}
 ]
+
 df = pd.DataFrame(locations)
 st.map(df, zoom=3)

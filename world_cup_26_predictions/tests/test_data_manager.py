@@ -1,6 +1,12 @@
+# pylint: disable=too-many-instance-attributes
 """
-Unit tests for the data_manager module. Ensures 100% coverage and Pylint 10/10 compliance.
+Test classes sometimes need more instance attributes
+to manage various test scenarios and states,
+so the strict limit isn’t as relevant in this context.
+
+This file contains unit tests for the data_manager.py file.
 """
+
 import os
 import unittest
 import shutil
@@ -30,9 +36,11 @@ class TestDataManager(unittest.TestCase):
         self.assertEqual(_fix_name("not applicable"), "", "Should map 'not applicable' to ''")
         self.assertEqual(_fix_name("n/a"), "", "Should map 'n/a' to ''")
         self.assertEqual(_fix_name("na"), "", "Should map 'na' to ''")
-        self.assertEqual(_fix_name("  Lionel  "), "Lionel", "Should trim whitespace and preserve case.")
-        self.assertEqual(_fix_name("MEssi"), "MEssi", "Should keep original string, only trimmed.")
-    
+        self.assertEqual(_fix_name("  Lionel  "), "Lionel",
+         "Should trim whitespace and preserve case.")
+        self.assertEqual(_fix_name("MEssi"), "MEssi",
+         "Should keep original string, only trimmed.")
+
     def test_load_data_missing_files(self):
         """
         Test load_data when some CSV files do not exist. Ensures it returns empty DataFrames
@@ -55,10 +63,10 @@ class TestDataManager(unittest.TestCase):
             # 'players' should have 1 row
             self.assertIn("players", dfs)
             self.assertEqual(len(dfs["players"]), 1, "Expected 1 row in the 'players' DataFrame.")
-            
             # Another known filename that doesn't exist => should be an empty DataFrame
             self.assertIn("goals", dfs)
-            self.assertTrue(dfs["goals"].empty, "Since 'goals.csv' doesn't exist, it should be empty DF.")
+            self.assertTrue(dfs["goals"].empty,
+             "Since 'goals.csv' doesn't exist, it should be empty DF.")
         finally:
             # Cleanup the temp folder
             shutil.rmtree(temp_path)
@@ -439,7 +447,8 @@ class TestDataManager(unittest.TestCase):
             "player_id": [100],
         })
 
-        # 8) matches_df empty => no merges for knockout => else in _merge_knockout_goals & _merge_clutch_goals
+        # 8) matches_df empty => no merges for knockout => else
+        # in _merge_knockout_goals & _merge_clutch_goals
         matches_df = pd.DataFrame()
 
         # 9) squads_df/teams_df both empty => else in _merge_primary_team
@@ -467,8 +476,8 @@ class TestDataManager(unittest.TestCase):
         # and coverage for the else branches. Check shape or columns exist:
         self.assertIsInstance(player_stats_edge, pd.DataFrame)
         self.assertFalse(player_stats_edge.empty, "We do have a row for player_id=100.")
-        self.assertIn("full_name", player_stats_edge.columns, "Should have 'full_name' from _prepare_player_base.")
-        
+        self.assertIn("full_name", player_stats_edge.columns,
+         "Should have 'full_name' from _prepare_player_base.")
         # Check that total_appearances might be 0.0
         self.assertIn("total_appearances", player_stats_edge.columns)
         row = player_stats_edge.iloc[0]
@@ -499,7 +508,8 @@ class TestDataManager(unittest.TestCase):
         self.assertEqual(_fix_name(" na "), "")
         self.assertEqual(_fix_name("  NOT APPLICABLE  "), "")
         self.assertEqual(_fix_name("   n/A   "), "")
-        self.assertEqual(_fix_name(" Lionel "), "Lionel", "Trims whitespace but keeps the original string content.")
+        self.assertEqual(_fix_name(" Lionel "), "Lionel",
+         "Trims whitespace but keeps the original string content.")
 
 
 if __name__ == "__main__":

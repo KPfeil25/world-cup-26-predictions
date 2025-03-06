@@ -1,8 +1,15 @@
+# pylint: disable=too-many-public-methods
 """
-Unit tests (unittest) for the player_analytics.py module.
+This is a test file with many public methods to cover
+a wide range of test cases, so enforcing a strict limit isn’t necessary here.
+Disabling this check helps keep the focus on thorough testing rather than
+adhering to a strict code style guideline.
+
+This file tests the player_analytics.py module, which contains functions for
+analyzing and visualizing player statistics.
 """
+
 import unittest
-import math
 import pandas as pd
 from plotly.graph_objects import Figure
 

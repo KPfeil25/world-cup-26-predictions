@@ -1,5 +1,10 @@
+# pylint: disable=invalid-name
+"""
+This file uses a naming convention required by Streamlit for proper page rendering.
+We intentionally deviate from the standard snake_case style, so the invalid-name
+check is disabled.
+"""
 import streamlit as st
-
 
 from player_analytics.player_analytics_tab import run_analytics_tab
 
@@ -21,7 +26,6 @@ def main():
 
     with tabs[1]:
         st.header("Team Analytics")
-    
 
 if __name__ == "__main__":
     main()

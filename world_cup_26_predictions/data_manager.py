@@ -75,7 +75,9 @@ def _prepare_player_base(players_df):
     else:
         players_df["family_name"] = players_df["family_name"].fillna("").apply(_fix_name)
 
-    players_df["full_name"] = (players_df["given_name"] + " " + players_df["family_name"]).str.strip()
+    players_df["full_name"] = (
+        players_df["given_name"] + " " + players_df["family_name"]
+        ).str.strip()
     players_df.loc[players_df["full_name"] == "", "full_name"] = "Unknown"
 
     # Parse birth_date (optional)
@@ -192,7 +194,8 @@ def _merge_cards(bookings_df, player_stats):
 
 def _merge_penalties(penalty_kicks_df, player_stats):
     """
-    Merges penalty attempt/conversion data => penalty_attempts, penalty_converted, penalty_conversion.
+    Merges penalty attempt/conversion data => penalty_attempts,
+    penalty_converted, penalty_conversion.
     """
     if not penalty_kicks_df.empty and "player_id" in penalty_kicks_df.columns:
         pen_agg = (
@@ -246,10 +249,12 @@ def _merge_substitutions(substitutions_df, goals_df, player_stats):
     if not substitutions_df.empty:
         # Provide default series of False if "coming_on"/"going_off" are missing
         sub_on = substitutions_df[
-            substitutions_df.get("coming_on", pd.Series(False, index=substitutions_df.index)).eq(True)
+            substitutions_df.get("coming_on",
+            pd.Series(False, index=substitutions_df.index)).eq(True)
         ]
         sub_off = substitutions_df[
-            substitutions_df.get("going_off", pd.Series(False, index=substitutions_df.index)).eq(True)
+            substitutions_df.get("going_off",
+            pd.Series(False, index=substitutions_df.index)).eq(True)
         ]
         sub_on_count = sub_on.groupby("player_id").size().reset_index(name="times_subbed_on")
         sub_off_count = sub_off.groupby("player_id").size().reset_index(name="times_subbed_off")

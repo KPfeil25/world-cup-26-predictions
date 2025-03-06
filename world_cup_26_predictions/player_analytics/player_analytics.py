@@ -1,4 +1,13 @@
+# pylint: disable=too-many-arguments, too-many-positional-arguments, disable=duplicate-code
 """
+These plotting functions are designed for high configurability, requiring several
+input parameters for customization. Reducing them would hurt flexibility, 
+so we disable the warnings to preserve this design.
+
+The duplicate code is intentional because one block is used in the main
+module while the other is in the test module. Since they serve different
+purposes, this duplication is acceptable and can be safely ignored.
+  
 A collection of Plotly-based functions for visualizing player statistics.
 """
 
@@ -277,15 +286,19 @@ def plot_substitution_patterns(player_stats, top_n=10, color_by=None,
             return None, None
 
     player_stats = player_stats.copy()
-    player_stats["times_subbed_on"] = pd.to_numeric(player_stats["times_subbed_on"], errors="coerce")
-    player_stats["times_subbed_off"] = pd.to_numeric(player_stats["times_subbed_off"], errors="coerce")
+    player_stats["times_subbed_on"] = pd.to_numeric(
+        player_stats["times_subbed_on"],errors="coerce")
+    player_stats["times_subbed_off"] = pd.to_numeric(
+        player_stats["times_subbed_off"], errors="coerce")
 
     if player_stats.empty:
         return None, None
 
     # If ANY side is entirely NaN => return None, None per the test's requirement
     # Because the test says "If times_subbed_on is all NaN => (None, None)", likewise for subbed_off
-    if player_stats["times_subbed_on"].dropna().empty or player_stats["times_subbed_off"].dropna().empty:
+    if (
+        player_stats["times_subbed_on"].dropna().empty
+         or player_stats["times_subbed_off"].dropna().empty):
         return None, None
 
     df_on = player_stats.nlargest(top_n, "times_subbed_on").copy()
@@ -409,7 +422,8 @@ def plot_compare_players_side_by_side(player_stats, selected_players):
         return None
 
     if "total_goals" in df_compare.columns:
-        df_compare["total_goals"] = pd.to_numeric(df_compare["total_goals"], errors="coerce").fillna(0)
+        df_compare["total_goals"] = pd.to_numeric(
+            df_compare["total_goals"], errors="coerce").fillna(0)
         df_compare = df_compare.sort_values("total_goals", ascending=False)
 
     stats_of_interest = {
@@ -546,7 +560,11 @@ def plot_top_clutch_scorers(player_stats, top_n=5, color_seq=None):
         title=f"Top {top_n} Clutch Scorers (75+ min)",
         labels=LABELS
     )
-    fig.update_layout(title_x=0.5, xaxis_title="Clutch Goals", yaxis_title="Player", showlegend=False)
+    fig.update_layout(
+        title_x=0.5,
+        xaxis_title="Clutch Goals",
+        yaxis_title="Player",
+        showlegend=False)
     fig.update_traces(textposition="inside")
     return fig
 
@@ -582,6 +600,10 @@ def plot_top_impact_players(player_stats, top_n=5, color_seq=None):
         title=f"Top {top_n} Impact Players (Subbed-on Goals)",
         labels=LABELS
     )
-    fig.update_layout(title_x=0.5, xaxis_title="Goals After Sub", yaxis_title="Player", showlegend=False)
+    fig.update_layout(
+        title_x=0.5,
+        xaxis_title="Goals After Sub",
+        yaxis_title="Player",
+        showlegend=False)
     fig.update_traces(textposition="inside")
     return fig
