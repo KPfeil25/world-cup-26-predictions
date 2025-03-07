@@ -1,8 +1,5 @@
-# pylint: disable=invalid-name
 """
-This file uses a naming convention required by Streamlit for proper page rendering.
-We intentionally deviate from the standard snake_case style, so the invalid-name
-check is disabled.
+This file is the prediction tool page for the World Cup 2026 Predictions.
 """
 
 import streamlit as st
