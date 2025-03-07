@@ -14,7 +14,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler, OneHotEncoder
 from sklearn.pipeline import Pipeline
-from data_manager import prepare_training_data
+from world_cup_26_predictions.predictions.data_manager import prepare_training_data
 
 class MatchResultPredictor:
     '''
