@@ -1,7 +1,12 @@
+# pylint: disable=invalid-name
+"""
+This file uses a naming convention required by Streamlit for proper page rendering.
+We intentionally deviate from the standard snake_case style, so the invalid-name
+check is disabled.
+"""
+
 import streamlit as st
-import pandas as pd
-import altair as alt
-from urllib.error import URLError
+
 
 st.set_page_config(page_title="Prediction Tool", page_icon="📊")
 
