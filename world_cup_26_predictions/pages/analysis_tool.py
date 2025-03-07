@@ -1,8 +1,6 @@
-# pylint: disable=invalid-name
 """
-This file uses a naming convention required by Streamlit for proper page rendering.
-We intentionally deviate from the standard snake_case style, so the invalid-name
-check is disabled.
+Main entry point for the World Cup Player Analytics.
+It has two tabs: Player Analytics and Team Analytics.
 """
 import streamlit as st
 
