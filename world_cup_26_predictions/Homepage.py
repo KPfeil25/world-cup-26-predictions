@@ -1,5 +1,3 @@
-# pylint: disable=invalid-name
-# This is a Page Name and its first letter should be in Capital Case.
 """
 This file is the homepage for the World Cup 2026 Analysis and Predictions app.
 It is the first page that users see when they visit the app. 
