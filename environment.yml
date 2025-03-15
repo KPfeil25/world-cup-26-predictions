@@ -2,8 +2,11 @@ name: world-cup-predictions-env
 channels:
   - defaults
 dependencies:
+  - python=3.12
   - numpy=1
   - pandas=2
-  - pip=24
   - plotly=5.24
-  - python=3.8
+  - pylint=3.3.3
+  - streamlit=1
+  - scikit-learn=1
+  - joblib=1
