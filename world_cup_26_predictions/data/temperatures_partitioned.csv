@@ -1,0 +1,248 @@
+year,city_name,avg_temp,type
+1930,Montevideo,15,M
+1934,Turin,40,M
+1934,Trieste,28,M
+1934,Florence,30,M
+1934,Naples,32,M
+1934,Rome,29,M
+1934,Genoa,30,M
+1934,Bologna,31,M
+1934,Milan,37,M
+1938,Paris,28,M
+1938,Toulouse,25,M
+1938,Reims,22,M
+1938,Marseille,27,M
+1938,Strasbourg,26,M
+1938,Le Havre,24,M
+1938,Bordeaux,27,M
+1938,Lille,27,M
+1938,Antibes,28,M
+1950,Rio de Janeiro,24,M
+1950,Belo Horizonte,27,M
+1950,Curitiba,27,M
+1950,São Paulo,20,M
+1950,Porto Alegre,21,M
+1950,Recife,20,M
+1954,Geneva,32,M
+1954,Lausanne,40,M
+1954,Zürich,30,M
+1954,Bern,28,M
+1954,Basel,31,M
+1954,Lugano,29,M
+1958,Solna,22,M
+1958,Malmö,23,M
+1958,Halmstad,21,M
+1958,Norrköping,20,M
+1958,Västerås,24,M
+1958,Sandviken,19,M
+1958,Uddevalla,20,M
+1958,Gothenburg,23,M
+1958,Helsingborg,22,M
+1958,Borås,24,M
+1958,Örebro,21,M
+1958,Eskilstuna,20,M
+1962,Arica,28,M
+1962,Santiago,29,M
+1962,Viña del Mar,27,M
+1962,Rancagua,26,M
+1966,London,20,M
+1966,Sheffield,18,M
+1966,Liverpool,21,M
+1966,Middlesbrough,18,M
+1966,Birmingham,19,M
+1966,Manchester,20,M
+1966,Sunderland,16,M
+1970,Mexico City,29,M
+1970,Puebla,28,M
+1970,Guadalajara,30,M
+1970,León,27,M
+1970,Toluca,28,M
+1974,Frankfurt,18,M
+1974,Berlin,20,M
+1974,Hamburg,19,M
+1974,Dortmund,16,M
+1974,Düsseldorf,15,M
+1974,Hanover,18,M
+1974,Munich,19,M
+1974,Stuttgart,17,M
+1974,Gelsenkirchen,16,M
+1978,Buenos Aires,10,M
+1978,Mar del Plata,8,M
+1978,Rosario,12,M
+1978,Mendoza,10,M
+1978,Córdoba,11,M
+1982,Barcelona,32,M
+1982,Vigo,31,M
+1982,Seville,34,M
+1982,A Coruña,31,M
+1982,Elche,30,M
+1982,Málaga,34,M
+1982,Gijón,30,M
+1982,Bilbao,32,M
+1982,Valencia,34,M
+1982,Oviedo,33,M
+1982,Valladolid,29,M
+1982,Zaragoza,30,M
+1982,Alicante,35,M
+1982,Madrid,32,M
+1986,Mexico City,31,M
+1986,Guadalajara,32,M
+1986,León,31,M
+1986,Irapuato,30,M
+1986,Monterrey,37,M
+1986,Toluca,33,M
+1986,Querétaro,34,M
+1986,Nezahualcóyotl,32,M
+1986,Puebla,32,M
+1990,Milan,23,M
+1990,Bari,22,M
+1990,Bologna,23,M
+1990,Rome,26,M
+1990,Florence,21,M
+1990,Turin,22,M
+1990,Genoa,23,M
+1990,Cagliari,21,M
+1990,Verona,22,M
+1990,Palermo,21,M
+1990,Udine,20,M
+1990,Naples,24,M
+1991,Guangzhou,13,W
+1991,Jiangmen,17,W
+1991,Foshan,15,W
+1991,Zhongshan,16,W
+1994,Chicago,32,M
+1994,Dallas,38,M
+1994,Pontiac,35,M
+1994,East Rutherford,33,M
+1994,Pasadena,38,M
+1994,Orlando,35,M
+1994,"Washington, D.C.",33,M
+1994,Stanford,35,M
+1994,Foxborough,32,M
+1995,Karlstad,18,W
+1995,Helsingborg,20,W
+1995,Västerås,15,W
+1995,Gävle,17,W
+1995,Solna,18,W
+1998,Saint-Denis,20,M
+1998,Montpellier,21,M
+1998,Bordeaux,19,M
+1998,Toulouse,20,M
+1998,Lens,22,M
+1998,Marseille,18,M
+1998,Nantes,17,M
+1998,Lyon,20,M
+1998,Saint-Étienne,21,M
+1998,Paris,20,M
+1999,New York City,32,W
+1999,San Jose,34,W
+1999,Los Angeles,39,W
+1999,Boston,32,W
+1999,Portland,33,W
+1999,"Washington, D.C.",35,W
+1999,Chicago,34,W
+1999,San Fransisco,37,W
+2002,Seoul,14,M
+2002,Niigata,17,M
+2002,Ulsan,16,M
+2002,Sapporo,18,M
+2002,Ibaraki,19,M
+2002,Busan,17,M
+2002,Saitama,17,M
+2002,Gwangju,20,M
+2002,Kobe,19,M
+2002,Suwon,19,M
+2002,Daegu,20,M
+2002,Jeonju,17,M
+2002,Seogwipo,18,M
+2002,Miyagi,17,M
+2002,Incheon,16,M
+2002,Yokohama,19,M
+2002,Ōita,20,M
+2002,Shizuoka,21,M
+2002,Osaka,21,M
+2002,Daejeon,20,M
+2003,Philadelphia,27,W
+2003,Columbus,26,W
+2003,"Washington, D.C.",27,W
+2003,Carson,25,W
+2003,Foxborough,26,W
+2003,Portland,25,W
+2006,Munich,24,M
+2006,Gelsenkirchen,23,M
+2006,Frankfurt,26,M
+2006,Dortmund,23,M
+2006,Hamburg,24,M
+2006,Leipzig,22,M
+2006,Nuremberg,23,M
+2006,Cologne,24,M
+2006,Kaiserslautern,23,M
+2006,Hanover,24,M
+2006,Stuttgart,24,M
+2006,Berlin,25,M
+2007,Shanghai,24,W
+2007,Chengdu,23,W
+2007,Hangzhou,26,W
+2007,Wuhan,25,W
+2007,Tianjin,25,W
+2010,Johannesburg,15,M
+2010,Cape Town,12,M
+2010,Port Elizabeth,13,M
+2010,Rustenburg,12,M
+2010,Polokwane,11,M
+2010,Pretoria,10,M
+2010,Durban,13,M
+2010,Bloemfontein,12,M
+2010,Nelspruit,13,M
+2011,Sinsheim,13,W
+2011,Berlin,14,W
+2011,Bochum,15,W
+2011,Wolfsburg,12,W
+2011,Leverkusen,11,W
+2011,Dresden,14,W
+2011,Augsburg,15,W
+2011,Mönchengladbach,12,W
+2011,Frankfurt,14,W
+2014,São Paulo,28,M
+2014,Natal,27,M
+2014,Salvador,29,M
+2014,Cuiabá,24,M
+2014,Belo Horizonte,24,M
+2014,Fortaleza,23,M
+2014,Manaus,24,M
+2014,Recife,26,M
+2014,Brasília,26,M
+2014,Porto Alegre,25,M
+2014,Rio de Janeiro,24,M
+2014,Curitiba,27,M
+2015,Edmonton,27,W
+2015,Ottawa,28,W
+2015,Winnipeg,26,W
+2015,Vancouver,27,W
+2015,Moncton,27,W
+2015,Montreal,26,W
+2018,Moscow,25,M
+2018,Yekaterinburg,26,M
+2018,Saint Petersburg,25,M
+2018,Sochi,24,M
+2018,Kazan,26,M
+2018,Saransk,25,M
+2018,Kaliningrad,24,M
+2018,Samara,25,M
+2018,Rostov-on-Don,24,M
+2018,Nizhny Novgorod,24,M
+2018,Volgograd,23,M
+2019,Paris,30,W
+2019,Rennes,31,W
+2019,Le Havre,30,W
+2019,Reims,29,W
+2019,Valenciennes,31,W
+2019,Grenoble,30,W
+2019,Nice,31,W
+2019,Montpellier,32,W
+2019,Lyon,31,W
+2022,Al Khor,28,M
+2022,Al Rayyan,29,M
+2022,Doha,26,M
+2022,Lusail,28,M
+2022,Al Wakrah,27,M
