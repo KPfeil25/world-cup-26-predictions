@@ -1,8 +1,6 @@
 name: world-cup-predictions-env
 channels:
   - defaults
-  - https://repo.anaconda.com/pkgs/main
-  - https://repo.anaconda.com/pkgs/r
 dependencies:
   - python=3.12
   - numpy=1
@@ -10,3 +8,5 @@ dependencies:
   - plotly=5.24
   - pylint=3.3.3
   - streamlit=1
+  - scikit-learn=1
+  - joblib=1

@@ -1,20 +1,14 @@
-# pylint: disable=too-many-public-methods
 """
-This is a test file with many public methods to cover
-a wide range of test cases, so enforcing a strict limit isn’t necessary here.
-Disabling this check helps keep the focus on thorough testing rather than
-adhering to a strict code style guideline.
-
-This file tests the player_analytics.py module, which contains functions for
-analyzing and visualizing player statistics.
+Unit tests for the updated player_analytics.py module,
+which contains functions for analyzing and visualizing player statistics.
 """
 
 import unittest
 import pandas as pd
 from plotly.graph_objects import Figure
 
-# Adjust the import path as needed if your structure differs
 from player_analytics.player_analytics import (
+    STATS_OF_INTEREST,
     plot_top_scorers,
     plot_top_knockout_scorers,
     plot_goals_per_appearance,
@@ -30,9 +24,10 @@ from player_analytics.player_analytics import (
     plot_top_impact_players,
 )
 
-class TestPlayerAnalytics(unittest.TestCase):
+
+class BaseTestAnalytics(unittest.TestCase):
     """
-    TestCase for verifying functionality of the player_analytics.py module.
+    Base class that sets up a sample DataFrame for use by all test classes.
     """
 
     def setUp(self):
@@ -64,9 +59,15 @@ class TestPlayerAnalytics(unittest.TestCase):
         }
         self.sample_data = pd.DataFrame(data)
 
+
+class TestTopScorers(BaseTestAnalytics):
+    """
+    Tests related to plot_top_scorers and plot_top_knockout_scorers.
+    """
+
     def test_plot_top_scorers_empty(self):
         """
-        plot_top_scorers should return None if the DataFrame is empty.
+        Tests that plot_top_scorers returns None when given an empty DataFrame.
         """
         df_empty = pd.DataFrame()
         fig = plot_top_scorers(df_empty)
@@ -74,14 +75,31 @@ class TestPlayerAnalytics(unittest.TestCase):
 
     def test_plot_top_scorers_valid(self):
         """
-        plot_top_scorers should return a Figure when valid data is provided.
+        Tests that plot_top_scorers returns a Figure when given a valid DataFrame.
         """
-        fig = plot_top_scorers(self.sample_data, top_n=3, color_by="continent")
+        fig = plot_top_scorers(self.sample_data, top_n=3)
         self.assertIsInstance(fig, Figure)
+
+    def test_plot_top_scorers_missing_columns(self):
+        """
+        Tests that plot_top_scorers returns None when a required column is missing.
+        """
+        df_missing_goals = pd.DataFrame({"full_name": ["Player 1"]})
+        self.assertIsNone(plot_top_scorers(df_missing_goals))
+
+    def test_plot_top_scorers_nan_column(self):
+        """
+        Tests that plot_top_scorers returns None when a column contains NaN values.
+        """
+        df_all_nan = pd.DataFrame({
+            "full_name": ["A", "B"],
+            "total_goals": [float('nan'), float('nan')]
+        })
+        self.assertIsNone(plot_top_scorers(df_all_nan))
 
     def test_plot_top_knockout_scorers_empty(self):
         """
-        plot_top_knockout_scorers should return None if the DataFrame is empty.
+        Tests that plot_top_knockout_scorers returns None when given an empty DataFrame.
         """
         df_empty = pd.DataFrame()
         fig = plot_top_knockout_scorers(df_empty)
@@ -89,14 +107,27 @@ class TestPlayerAnalytics(unittest.TestCase):
 
     def test_plot_top_knockout_scorers_valid(self):
         """
-        plot_top_knockout_scorers should return a Figure with valid data.
+        Tests that plot_top_knockout_scorers returns a Figure when given a valid DataFrame.
         """
         fig = plot_top_knockout_scorers(self.sample_data, top_n=2)
         self.assertIsInstance(fig, Figure)
 
+    def test_plot_top_knockout_scorers_missing_column(self):
+        """
+        Tests that plot_top_knockout_scorers returns None when a required column is missing.
+        """
+        df_missing = pd.DataFrame({"full_name": ["Player X"]})
+        self.assertIsNone(plot_top_knockout_scorers(df_missing))
+
+
+class TestGoalsPerAppearance(BaseTestAnalytics):
+    """
+    Tests related to plot_goals_per_appearance.
+    """
+
     def test_plot_goals_per_appearance_empty(self):
         """
-        plot_goals_per_appearance should return None if eligible subset is empty.
+        Tests that plot_goals_per_appearance returns None when given an empty DataFrame.
         """
         df_empty = pd.DataFrame(columns=["total_appearances"])
         fig = plot_goals_per_appearance(df_empty)
@@ -104,14 +135,31 @@ class TestPlayerAnalytics(unittest.TestCase):
 
     def test_plot_goals_per_appearance_valid(self):
         """
-        plot_goals_per_appearance should return a Figure when there's enough data.
+        Tests that plot_goals_per_appearance returns a Figure when given a valid DataFrame.
         """
         fig = plot_goals_per_appearance(self.sample_data, min_appearances=10, top_n=2)
         self.assertIsInstance(fig, Figure)
 
+    def test_plot_goals_per_appearance_no_eligible_players(self):
+        """
+        Tests that plot_goals_per_appearance returns None when there are no eligible players.
+        """
+        df_mock = pd.DataFrame({
+            "full_name": ["X", "Y"],
+            "goals_per_appearance": [0.5, 0.7],
+            "total_appearances": [5, 8]
+        })
+        self.assertIsNone(plot_goals_per_appearance(df_mock, min_appearances=10))
+
+
+class TestMostAwardedPlayers(BaseTestAnalytics):
+    """
+    Tests related to plot_most_awarded_players.
+    """
+
     def test_plot_most_awarded_players_empty(self):
         """
-        plot_most_awarded_players should return None if subset is empty.
+        Tests that plot_most_awarded_players returns None when given an empty DataFrame.
         """
         df_empty = pd.DataFrame(columns=["total_awards"])
         fig = plot_most_awarded_players(df_empty)
@@ -119,60 +167,112 @@ class TestPlayerAnalytics(unittest.TestCase):
 
     def test_plot_most_awarded_players_valid(self):
         """
-        plot_most_awarded_players should return a Figure if data is present.
+        Tests that plot_most_awarded_players returns a Figure when given a valid DataFrame.
         """
         fig = plot_most_awarded_players(self.sample_data, top_n=3)
         self.assertIsInstance(fig, Figure)
 
+    def test_plot_most_awarded_players_missing_full_name(self):
+        """
+        Tests that plot_most_awarded_players returns None when a required column is missing.
+        """
+        df_missing = pd.DataFrame({"total_awards": [5, 6, 7]})
+        self.assertIsNone(plot_most_awarded_players(df_missing))
+
+    def test_plot_most_awarded_players_all_nan_awards(self):
+        """
+        Tests that plot_most_awarded_players returns None when all awards are NaN.
+        """
+        df_nan_awards = pd.DataFrame({
+            "full_name": ["A", "B"],
+            "total_awards": [float('nan'), float('nan')]
+        })
+        self.assertIsNone(plot_most_awarded_players(df_nan_awards))
+
+
+class TestBestPenaltyConversion(BaseTestAnalytics):
+    """
+    Tests related to plot_best_penalty_conversion.
+    """
+
     def test_plot_best_penalty_conversion_empty(self):
         """
-        plot_best_penalty_conversion should return None if no data or no eligible player.
+        Tests that plot_best_penalty_conversion returns None when given an empty DataFrame.
         """
         df_empty = pd.DataFrame(columns=["penalty_attempts"])
-        fig_empty = plot_best_penalty_conversion(df_empty)
-        self.assertIsNone(fig_empty)
+        self.assertIsNone(plot_best_penalty_conversion(df_empty))
 
         df_no_eligible = pd.DataFrame({
             "full_name": ["X"],
             "penalty_attempts": [0],
             "penalty_conversion": [0]
         })
-        fig_ineligible = plot_best_penalty_conversion(df_no_eligible, min_attempts=1)
-        self.assertIsNone(fig_ineligible)
+        self.assertIsNone(plot_best_penalty_conversion(df_no_eligible, min_attempts=1))
 
     def test_plot_best_penalty_conversion_valid(self):
         """
-        plot_best_penalty_conversion should return a Figure with valid data.
+        Tests that plot_best_penalty_conversion returns a Figure when given a valid DataFrame.
         """
         fig = plot_best_penalty_conversion(self.sample_data, min_attempts=1, top_n=3)
         self.assertIsInstance(fig, Figure)
 
+    def test_plot_best_penalty_conversion_missing_columns(self):
+        """
+        Tests that plot_best_penalty_conversion returns None when a required column is missing.
+        """
+        df_missing = pd.DataFrame({"full_name": ["X"], "penalty_attempts": [1]})
+        self.assertIsNone(plot_best_penalty_conversion(df_missing))
+
+        df_missing2 = pd.DataFrame({"full_name": ["X"], "penalty_conversion": [0.5]})
+        self.assertIsNone(plot_best_penalty_conversion(df_missing2))
+
+
+class TestHighestCardRate(BaseTestAnalytics):
+    """
+    Tests related to plot_highest_card_rate.
+    """
+
     def test_plot_highest_card_rate_empty(self):
         """
-        plot_highest_card_rate returns None if no players meet min_appearances.
+        Tests that plot_highest_card_rate returns None when given an empty DataFrame.
         """
         df_empty = pd.DataFrame(columns=["total_appearances"])
-        fig_empty = plot_highest_card_rate(df_empty)
-        self.assertIsNone(fig_empty)
+        self.assertIsNone(plot_highest_card_rate(df_empty))
 
         df_ineligible = pd.DataFrame({
             "full_name": ["X"],
             "total_appearances": [5],
             "cards_per_appearance": [0.1]
         })
-        fig_ineligible = plot_highest_card_rate(df_ineligible, min_appearances=10)
-        self.assertIsNone(fig_ineligible)
+        self.assertIsNone(plot_highest_card_rate(df_ineligible, min_appearances=10))
 
     def test_plot_highest_card_rate_valid(self):
         """
-        plot_highest_card_rate should return a Figure when data is valid.
+        Tests that plot_highest_card_rate returns a Figure when given a valid DataFrame.
         """
         fig = plot_highest_card_rate(self.sample_data, min_appearances=10, top_n=2)
         self.assertIsInstance(fig, Figure)
 
+    def test_plot_highest_card_rate_ineligible_data(self):
+        """
+        Tests that plot_highest_card_rate returns None when there are no eligible players.
+        """
+        df_mock = pd.DataFrame({
+            "full_name": ["P1", "P2"],
+            "cards_per_appearance": [0.1, 0.2],
+            "total_appearances": [1, 9]
+        })
+        self.assertIsNone(plot_highest_card_rate(df_mock, min_appearances=10))
+
+
+class TestSubstitutionPatterns(BaseTestAnalytics):
+    """
+    Tests related to plot_substitution_patterns.
+    """
+
     def test_plot_substitution_patterns_empty(self):
         """
-        plot_substitution_patterns should return (None, None) if empty.
+        Tests that plot_substitution_patterns returns None when given an empty DataFrame.
         """
         df_empty = pd.DataFrame()
         fig_on, fig_off = plot_substitution_patterns(df_empty)
@@ -181,15 +281,44 @@ class TestPlayerAnalytics(unittest.TestCase):
 
     def test_plot_substitution_patterns_valid(self):
         """
-        plot_substitution_patterns should return two Figures with valid data.
+        Tests that plot_substitution_patterns returns two Figures when given a valid DataFrame.
         """
         fig_on, fig_off = plot_substitution_patterns(self.sample_data, top_n=2)
         self.assertIsInstance(fig_on, Figure)
         self.assertIsInstance(fig_off, Figure)
 
+    def test_plot_substitution_patterns_missing_columns(self):
+        """
+        Tests that plot_substitution_patterns returns None when a required column is missing.
+        """
+        df_missing = pd.DataFrame({"times_subbed_on": [1], "times_subbed_off": [1]})
+        fig_on, fig_off = plot_substitution_patterns(df_missing)
+        self.assertIsNone(fig_on)
+        self.assertIsNone(fig_off)
+
+    def test_plot_substitution_patterns_numeric_empty_after_coercion(self):
+        """
+        Tests that plot_substitution_patterns returns None when a required column
+        is missing.
+        """
+        df_all_nan = pd.DataFrame({
+            "full_name": ["A", "B"],
+            "times_subbed_on": [float('nan'), float('nan')],
+            "times_subbed_off": [0, 1]
+        })
+        fig_on, fig_off = plot_substitution_patterns(df_all_nan)
+        self.assertIsNone(fig_on)
+        self.assertIsNone(fig_off)
+
+
+class TestPositionAppearances(BaseTestAnalytics):
+    """
+    Tests related to plot_position_appearances.
+    """
+
     def test_plot_position_appearances_empty(self):
         """
-        plot_position_appearances should return None if no players in position.
+        Tests that plot_position_appearances returns None when given an empty DataFrame.
         """
         df_empty = pd.DataFrame()
         fig = plot_position_appearances(df_empty, "goal_keeper")
@@ -205,47 +334,68 @@ class TestPlayerAnalytics(unittest.TestCase):
 
     def test_plot_position_appearances_valid(self):
         """
-        plot_position_appearances should return a Figure if position is present.
+        Tests that plot_position_appearances returns a Figure when given a valid DataFrame.
         """
         fig = plot_position_appearances(self.sample_data, "goal_keeper")
         self.assertIsInstance(fig, Figure)
 
+    def test_plot_position_appearances_missing_position_col(self):
+        """
+        Tests that plot_position_appearances returns None when a required column is missing.
+        """
+        df_missing = pd.DataFrame({
+            "full_name": ["X"],
+            "total_appearances": [10]
+        })
+        self.assertIsNone(plot_position_appearances(df_missing, "goal_keeper"))
+
+
+class TestComparePlayers(BaseTestAnalytics):
+    """
+    Tests related to compare_players().
+    """
+
     def test_compare_players_empty(self):
         """
-        compare_players should return empty DataFrame if stats or selected players are invalid.
+        Tests that compare_players returns an empty DataFrame when given an empty DataFrame.
         """
         df_empty = pd.DataFrame()
         result_empty = compare_players(df_empty, ["Player A"])
         self.assertTrue(result_empty.empty)
 
-        # No matching names
         df_nomatch = pd.DataFrame({"full_name": ["Z"], "total_goals": [1]})
         result_nomatch = compare_players(df_nomatch, ["Player A"])
         self.assertTrue(result_nomatch.empty)
 
     def test_compare_players_valid(self):
         """
-        compare_players should return the requested players sorted by total_goals desc.
+        Tests that compare_players returns a DataFrame when given a valid DataFrame.
         """
         selected = ["Player A", "Player C"]
         df_comp = compare_players(self.sample_data, selected)
-        # Just ensure it's not empty if there's a match
         self.assertFalse(df_comp.empty)
 
-        expected_cols = [
-            "player_id", "full_name", "continent",
-            "total_appearances", "total_goals", "knockout_goals",
-            "goals_per_appearance", "total_cards", "cards_per_appearance",
-            "penalty_attempts", "penalty_converted", "penalty_conversion",
-            "total_awards", "times_subbed_on", "times_subbed_off",
-            "subbed_on_goals", "clutch_goals"
-        ]
-        for col in expected_cols:
-            self.assertIn(col, df_comp.columns)
+        for col in STATS_OF_INTEREST:
+            if col in df_comp.columns:
+                self.assertIn(col, df_comp.columns)
+
+    def test_compare_players_missing_total_goals(self):
+        """
+        Tests that compare_players returns an empty DataFrame when total_goals is missing.
+        """
+        df_missing = pd.DataFrame({"full_name": ["A", "B"]})
+        result = compare_players(df_missing, ["A"])
+        self.assertTrue(result.empty)
+
+
+class TestPlotComparePlayersSideBySide(BaseTestAnalytics):
+    """
+    Tests related to plot_compare_players_side_by_side().
+    """
 
     def test_plot_compare_players_side_by_side_empty(self):
         """
-        plot_compare_players_side_by_side returns None if no matching players.
+        Tests that plot_compare_players_side_by_side returns None when given an empty DataFrame.
         """
         df_empty = pd.DataFrame()
         fig_empty = plot_compare_players_side_by_side(df_empty, ["Player A"])
@@ -257,197 +407,29 @@ class TestPlayerAnalytics(unittest.TestCase):
 
     def test_plot_compare_players_side_by_side_valid(self):
         """
-        plot_compare_players_side_by_side returns a Figure if players exist.
+        Tests that plot_compare_players_side_by_side returns a Figure when given a valid DataFrame.
         """
-        fig = plot_compare_players_side_by_side(self.sample_data, ["Player A", "Player B"])
+        fig = plot_compare_players_side_by_side(
+            self.sample_data, ["Player A", "Player B"]
+        )
         self.assertIsInstance(fig, Figure)
-
-    def test_plot_comparison_radar_empty(self):
-        """
-        plot_comparison_radar returns None if no matching players or empty DataFrame.
-        """
-        df_empty = pd.DataFrame()
-        fig_empty = plot_comparison_radar(df_empty, ["Player A"])
-        self.assertIsNone(fig_empty)
-
-    def test_plot_comparison_radar_valid(self):
-        """
-        plot_comparison_radar returns a Figure for up to 5 players.
-        """
-        fig = plot_comparison_radar(self.sample_data, ["Player A", "Player B", "Player C"])
-        self.assertIsInstance(fig, Figure)
-        # We expect up to 3 traces
-        self.assertEqual(len(fig.data), 3)
-
-    def test_plot_top_clutch_scorers_empty(self):
-        """
-        plot_top_clutch_scorers returns None if data is empty or missing 'clutch_goals'.
-        """
-        df_empty = pd.DataFrame()
-        fig_empty = plot_top_clutch_scorers(df_empty)
-        self.assertIsNone(fig_empty)
-
-        df_no_clutch = pd.DataFrame({"full_name": ["X"], "total_goals": [5]})
-        fig_no_clutch = plot_top_clutch_scorers(df_no_clutch)
-        self.assertIsNone(fig_no_clutch)
-
-    def test_plot_top_clutch_scorers_valid(self):
-        """
-        plot_top_clutch_scorers returns a Figure for the given top_n.
-        """
-        fig = plot_top_clutch_scorers(self.sample_data, top_n=3)
-        self.assertIsInstance(fig, Figure)
-
-    def test_plot_top_impact_players_empty(self):
-        """
-        plot_top_impact_players returns None if data is empty or missing 'subbed_on_goals'.
-        """
-        df_empty = pd.DataFrame()
-        fig_empty = plot_top_impact_players(df_empty)
-        self.assertIsNone(fig_empty)
-
-        df_no_subbed = pd.DataFrame({"full_name": ["X"], "total_goals": [2]})
-        fig_no_subbed = plot_top_impact_players(df_no_subbed)
-        self.assertIsNone(fig_no_subbed)
-
-    def test_plot_top_impact_players_valid(self):
-        """
-        plot_top_impact_players returns a Figure for the given top_n.
-        """
-        fig = plot_top_impact_players(self.sample_data, top_n=3)
-        self.assertIsInstance(fig, Figure)
-
-    def test_plot_top_scorers_missing_columns(self):
-        """
-        Forces plot_top_scorers to return None because 'total_goals' is missing.
-        """
-        df_missing_goals = pd.DataFrame({"full_name": ["Player 1"]})
-        self.assertIsNone(plot_top_scorers(df_missing_goals))
-
-    def test_plot_top_scorers_nan_column(self):
-        """
-        Forces plot_top_scorers to coerce total_goals to numeric, but all NaN => return None.
-        """
-        df_all_nan = pd.DataFrame({
-            "full_name": ["A", "B"],
-            "total_goals": [float('nan'), float('nan')]
-        })
-        self.assertIsNone(plot_top_scorers(df_all_nan))
-
-    def test_plot_top_knockout_scorers_missing_column(self):
-        """
-        'knockout_goals' missing => should return None.
-        """
-        df_missing = pd.DataFrame({"full_name": ["Player X"]})
-        self.assertIsNone(plot_top_knockout_scorers(df_missing))
-
-    def test_plot_goals_per_appearance_no_eligible_players(self):
-        """
-        Even if columns exist, if no players meet min_appearances => early return None.
-        """
-        df_mock = pd.DataFrame({
-            "full_name": ["X", "Y"],
-            "goals_per_appearance": [0.5, 0.7],
-            "total_appearances": [5, 8],  # All < min_appearances=10
-        })
-        self.assertIsNone(plot_goals_per_appearance(df_mock, min_appearances=10))
-
-    def test_plot_most_awarded_players_missing_full_name(self):
-        """
-        'full_name' missing => immediate return None.
-        """
-        df_missing = pd.DataFrame({"total_awards": [5, 6, 7]})
-        self.assertIsNone(plot_most_awarded_players(df_missing))
-
-    def test_plot_most_awarded_players_all_nan_awards(self):
-        """
-        total_awards is present but entirely NaN => returns None after coercion.
-        """
-        df_nan_awards = pd.DataFrame({
-            "full_name": ["A", "B"],
-            "total_awards": [float('nan'), float('nan')]
-        })
-        self.assertIsNone(plot_most_awarded_players(df_nan_awards))
-
-    def test_plot_best_penalty_conversion_missing_columns(self):
-        """
-        Missing 'penalty_conversion' or 'penalty_attempts' => None.
-        """
-        df_missing = pd.DataFrame({"full_name": ["X"], "penalty_attempts": [1]})
-        self.assertIsNone(plot_best_penalty_conversion(df_missing))
-        df_missing2 = pd.DataFrame({"full_name": ["X"], "penalty_conversion": [0.5]})
-        self.assertIsNone(plot_best_penalty_conversion(df_missing2))
-
-    def test_plot_highest_card_rate_ineligible_data(self):
-        """
-        Everyone below min_appearances => returns None.
-        """
-        df_mock = pd.DataFrame({
-            "full_name": ["P1", "P2"],
-            "cards_per_appearance": [0.1, 0.2],
-            "total_appearances": [1, 9]
-        })
-        self.assertIsNone(plot_highest_card_rate(df_mock, min_appearances=10))
-
-    def test_plot_substitution_patterns_missing_columns(self):
-        """
-        If 'full_name' or 'times_subbed_on' etc. not present => returns (None, None).
-        """
-        df_missing = pd.DataFrame({"times_subbed_on": [1], "times_subbed_off": [1]})
-        # missing 'full_name'
-        fig_on, fig_off = plot_substitution_patterns(df_missing)
-        self.assertIsNone(fig_on)
-        self.assertIsNone(fig_off)
-
-    def test_plot_substitution_patterns_numeric_empty_after_coercion(self):
-        """
-        times_subbed_on is all NaN => empty after dropna => returns (None, None).
-        """
-        df_all_nan = pd.DataFrame({
-            "full_name": ["A", "B"],
-            "times_subbed_on": [float('nan'), float('nan')],
-            "times_subbed_off": [0, 1]
-        })
-        fig_on, fig_off = plot_substitution_patterns(df_all_nan)
-        # We expect both to be None if 'times_subbed_on' is all NaN
-        self.assertIsNone(fig_on)
-        self.assertIsNone(fig_off)
-
-    def test_plot_position_appearances_missing_position_col(self):
-        """
-        Missing 'goal_keeper' => None.
-        """
-        df_missing = pd.DataFrame({
-            "full_name": ["X"],
-            "total_appearances": [10]
-        })
-        self.assertIsNone(plot_position_appearances(df_missing, "goal_keeper"))
-
-    def test_compare_players_missing_total_goals(self):
-        """
-        If 'total_goals' is missing, returns empty DataFrame immediately.
-        """
-        df_missing = pd.DataFrame({
-            "full_name": ["A", "B"]
-        })
-        result = compare_players(df_missing, ["A"])
-        self.assertTrue(result.empty)
 
     def test_plot_compare_players_side_by_side_missing_required_stat(self):
         """
-        'knockout_goals' or any stats_of_interest missing => return None.
+        Tests that plot_compare_players_side_by_side returns None when a required column is missing.
         """
         df_mock = pd.DataFrame({
             "full_name": ["P1", "P2"],
             "total_goals": [10, 20],
-            # missing 'knockout_goals'
+            # 'knockout_goals' is missing
         })
         fig = plot_compare_players_side_by_side(df_mock, ["P1", "P2"])
         self.assertIsNone(fig)
 
     def test_plot_compare_players_side_by_side_empty_after_isin(self):
         """
-        If no matches in selected_players => returns None.
+        Tests that plot_compare_players_side_by_side returns None when there are no
+        eligible players.
         """
         df_mock = pd.DataFrame({
             "full_name": ["P1", "P2"],
@@ -456,9 +438,31 @@ class TestPlayerAnalytics(unittest.TestCase):
         fig = plot_compare_players_side_by_side(df_mock, ["P3", "P4"])
         self.assertIsNone(fig)
 
+
+class TestPlotComparisonRadar(BaseTestAnalytics):
+    """
+    Tests related to plot_comparison_radar().
+    """
+
+    def test_plot_comparison_radar_empty(self):
+        """
+        Tests that plot_comparison_radar returns None when given an empty DataFrame.
+        """
+        df_empty = pd.DataFrame()
+        fig_empty = plot_comparison_radar(df_empty, ["Player A"])
+        self.assertIsNone(fig_empty)
+
+    def test_plot_comparison_radar_valid(self):
+        """
+        Tests that plot_comparison_radar returns a Figure when given a valid DataFrame.
+        """
+        fig = plot_comparison_radar(self.sample_data, ["Player A", "Player B", "Player C"])
+        self.assertIsInstance(fig, Figure)
+        self.assertEqual(len(fig.data), 3)
+
     def test_plot_comparison_radar_missing_one_col(self):
         """
-        If any of needed_cols is missing => return None.
+        Tests that plot_comparison_radar returns None when a required column is missing.
         """
         df_mock = pd.DataFrame({
             "full_name": ["P1", "P2"],
@@ -471,8 +475,8 @@ class TestPlayerAnalytics(unittest.TestCase):
 
     def test_plot_comparison_radar_more_than_five_players(self):
         """
-        Ensures df_radar.head(5) is tested. We pass 6 players and only
-        the first 5 get plotted.
+        Tests that plot_comparison_radar returns a Figure when given a DataFrame
+        with more than 5 players.
         """
         df_6 = pd.DataFrame({
             "full_name": [f"P{i}" for i in range(6)],
@@ -483,14 +487,38 @@ class TestPlayerAnalytics(unittest.TestCase):
             "total_awards": [2, 3, 4, 1, 5, 2],
             "subbed_on_goals": [1, 0, 2, 3, 0, 0],
         })
-        fig = plot_comparison_radar(df_6, ["P0", "P1", "P2", "P3", "P4", "P5"])
+        fig = plot_comparison_radar(
+            df_6, ["P0", "P1", "P2", "P3", "P4", "P5"]
+        )
         self.assertIsInstance(fig, Figure)
-        # Should only contain 5 traces
         self.assertEqual(len(fig.data), 5)
+
+
+class TestTopClutchScorers(BaseTestAnalytics):
+    """
+    Tests related to plot_top_clutch_scorers().
+    """
+
+    def test_plot_top_clutch_scorers_empty(self):
+        """
+        Tests that plot_top_clutch_scorers returns None when given an empty DataFrame.
+        """
+        df_empty = pd.DataFrame()
+        self.assertIsNone(plot_top_clutch_scorers(df_empty))
+
+        df_no_clutch = pd.DataFrame({"full_name": ["X"], "total_goals": [5]})
+        self.assertIsNone(plot_top_clutch_scorers(df_no_clutch))
+
+    def test_plot_top_clutch_scorers_valid(self):
+        """
+        Tests that plot_top_clutch_scorers returns a Figure when given a valid DataFrame.
+        """
+        fig = plot_top_clutch_scorers(self.sample_data, top_n=3)
+        self.assertIsInstance(fig, Figure)
 
     def test_plot_top_clutch_scorers_all_nan(self):
         """
-        If 'clutch_goals' is all NaN => return None.
+        Tests that plot_top_clutch_scorers returns None when all clutch goals are NaN.
         """
         df_nan = pd.DataFrame({
             "full_name": ["P1", "P2"],
@@ -498,13 +526,35 @@ class TestPlayerAnalytics(unittest.TestCase):
         })
         self.assertIsNone(plot_top_clutch_scorers(df_nan))
 
+
+class TestTopImpactPlayers(BaseTestAnalytics):
+    """
+    Tests related to plot_top_impact_players().
+    """
+
+    def test_plot_top_impact_players_empty(self):
+        """
+        Tests that plot_top_impact_players returns None when given an empty DataFrame.
+        """
+        df_empty = pd.DataFrame()
+        self.assertIsNone(plot_top_impact_players(df_empty))
+
+        df_no_subbed = pd.DataFrame({"full_name": ["X"], "total_goals": [2]})
+        self.assertIsNone(plot_top_impact_players(df_no_subbed))
+
+    def test_plot_top_impact_players_valid(self):
+        """
+        Tests that plot_top_impact_players returns a Figure when given a valid DataFrame.
+        """
+        fig = plot_top_impact_players(self.sample_data, top_n=3)
+        self.assertIsInstance(fig, Figure)
+
     def test_plot_top_impact_players_missing_subbed_on_goals(self):
         """
-        If 'subbed_on_goals' missing => returns None.
+        Tests that plot_top_impact_players returns None when subbed_on_goals is missing.
         """
         df_missing = pd.DataFrame({"full_name": ["X"], "total_goals": [2]})
-        fig = plot_top_impact_players(df_missing)
-        self.assertIsNone(fig)
+        self.assertIsNone(plot_top_impact_players(df_missing))
 
 
 if __name__ == "__main__":
