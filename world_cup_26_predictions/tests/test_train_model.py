@@ -56,13 +56,14 @@ class TestMatchResultPredictor(unittest.TestCase):
         """
         Test the train_model method
         """
-        # Mock the train_test_split return value
-        x_train = self.sample_data.drop(['result', 'result_encoded'], axis=1)
+        sample_data_with_encoding = self.sample_data.copy()
+        sample_data_with_encoding['result_encoded'] = [0, 1, 2, 0]
+        x_train = self.sample_data.drop('result', axis=1)
         x_test = x_train.copy()
-        y_train = self.sample_data['result_encoded']
+        y_train = np.array([0, 1, 2, 0])
         y_test = y_train.copy()
         mock_train_test_split.return_value = (x_train, x_test, y_train, y_test)
-        model, preprocessor, _ = self.predictor.train_model(self.sample_data)
+        model, preprocessor, _ = self.predictor.train_model(sample_data_with_encoding)
         self.assertIsInstance(model, Pipeline)
         self.assertIsInstance(preprocessor, ColumnTransformer)
         self.assertEqual(mock_joblib_dump.call_count, 2)
@@ -81,7 +82,7 @@ class TestMatchResultPredictor(unittest.TestCase):
         mock_model = MagicMock()
         mock_le = MagicMock()
         mock_model.predict_proba.return_value = np.array([
-            [0.2, 0.7, 0.1],  # Home Win probability highest
+            [0.2, 0.7, 0.1],
         ])
         mock_le.inverse_transform.return_value = np.array(['Home Win'])
         mock_joblib_load.side_effect = [mock_model, mock_le]
@@ -91,17 +92,18 @@ class TestMatchResultPredictor(unittest.TestCase):
         mock_le.inverse_transform.assert_called_once()
         self.assertEqual(mock_joblib_load.call_count, 2)
 
-    @patch('predictions.data_manager_ml.prepare_training_data')
-    @patch.object(MatchResultPredictor, 'train_model')
-    def test_main_execution(self, mock_train_model, mock_prepare_data):
+    @patch('predictions.train_model.prepare_training_data')
+    def test_main_execution(self, mock_prepare_data):
         """
         Test the main execution block
         """
-        with patch('predictions.train_model.__name__', '__main__'):
-            # Mock the prepare_training_data function
-            mock_prepare_data.return_value = self.sample_data
+        mock_prepare_data.return_value = self.sample_data
+        with patch.object(MatchResultPredictor, 'train_model') as mock_train_model:
+            df = mock_prepare_data()
+            predictor = MatchResultPredictor()
+            predictor.train_model(df)
             mock_prepare_data.assert_called_once()
-            mock_train_model.assert_called_once()
+            mock_train_model.assert_called_once_with(df)
 
 if __name__ == '__main__':
     unittest.main()
