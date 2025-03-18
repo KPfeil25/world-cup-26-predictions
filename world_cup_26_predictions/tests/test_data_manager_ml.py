@@ -11,7 +11,7 @@ from predictions.data_manager_ml import (
     feature_addition_players, feature_addition_awards, prepare_training_data
 )
 
-class TestDataManager(unittest.TestCase):
+class TestDataManagerML(unittest.TestCase):
     '''
     Add
     '''
