@@ -387,6 +387,107 @@ def load_data():
         st.error(f"Required data file not found: {file_error}")
         return None
 
+def get_country_code(team_name):
+    """
+    Convert team name to 2-letter ISO country code.
+    
+    Args:
+        team_name (str): Name of the country/team
+        
+    Returns:
+        str: 2-letter ISO country code or None if not found
+    """
+    country_map = {
+        "Algeria": "dz",
+        "Angola": "ao",
+        "Argentina": "ar",
+        "Australia": "au",
+        "Austria": "at",
+        "Belgium": "be",
+        "Bolivia": "bo",
+        "Bosnia and Herzegovina": "ba",
+        "Brazil": "br",
+        "Bulgaria": "bg",
+        "Cameroon": "cm",
+        "Canada": "ca",
+        "Chile": "cl",
+        "China": "cn",
+        "Chinese Taipei": "tw",
+        "Colombia": "co",
+        "Costa Rica": "cr",
+        "Croatia": "hr",
+        "Cuba": "cu",
+        "Czech Republic": "cz",
+        "Czechoslovakia": "cz",
+        "Denmark": "dk",
+        "Dutch East Indies": "id",
+        "East Germany": "de",
+        "Ecuador": "ec",
+        "Egypt": "eg",
+        "El Salvador": "sv",
+        "England": "gb-eng",
+        "Equatorial Guinea": "gq",
+        "France": "fr",
+        "Germany": "de",
+        "Ghana": "gh",
+        "Greece": "gr",
+        "Haiti": "ht",
+        "Honduras": "hn",
+        "Hungary": "hu",
+        "Iceland": "is",
+        "Iran": "ir",
+        "Iraq": "iq",
+        "Israel": "il",
+        "Italy": "it",
+        "Ivory Coast": "ci",
+        "Jamaica": "jm",
+        "Japan": "jp",
+        "Kuwait": "kw",
+        "Mexico": "mx",
+        "Morocco": "ma",
+        "Netherlands": "nl",
+        "New Zealand": "nz",
+        "Nigeria": "ng",
+        "North Korea": "kp",
+        "Northern Ireland": "gb-nir",
+        "Norway": "no",
+        "Panama": "pa",
+        "Paraguay": "py",
+        "Peru": "pe",
+        "Poland": "pl",
+        "Portugal": "pt",
+        "Qatar": "qa",
+        "Republic of Ireland": "ie",
+        "Romania": "ro",
+        "Russia": "ru",
+        "Saudi Arabia": "sa",
+        "Scotland": "gb-sct",
+        "Senegal": "sn",
+        "Serbia": "rs",
+        "Serbia and Montenegro": "rs",
+        "Slovakia": "sk",
+        "Slovenia": "si",
+        "South Africa": "za",
+        "South Korea": "kr",
+        "Soviet Union": "ru",
+        "Spain": "es",
+        "Sweden": "se",
+        "Switzerland": "ch",
+        "Thailand": "th",
+        "Togo": "tg",
+        "Trinidad and Tobago": "tt",
+        "Tunisia": "tn",
+        "Turkey": "tr",
+        "Ukraine": "ua",
+        "United Arab Emirates": "ae",
+        "United States": "us",
+        "Uruguay": "uy",
+        "Wales": "gb-wls",
+        "West Germany": "de",
+        "Yugoslavia": "rs",
+        "Zaire": "cd"
+    }
+    return country_map.get(team_name)
 
 def display_team_info(team_data, column, data_dict):
     """
@@ -400,10 +501,14 @@ def display_team_info(team_data, column, data_dict):
     team_name = team_data['name']
     team_year = team_data['year']
     gender = team_data['gender']
+    country_code = get_country_code(team_name)
     with column:
         st.subheader(f"{team_name}")
         st.markdown(f"### {team_name} ({team_year})")
-        st.image(f"https://via.placeholder.com/150?text={team_name}", width=150)
+        if country_code:
+            st.image(f"https://flagcdn.com/w160/{country_code.lower()}.png", width=150)
+        else:
+            st.image(f"https://via.placeholder.com/150?text={team_name}", width=150)
         team_awards = get_team_award_count(team_name, data_dict['awards'])
         st.markdown(f"**Awards:** {team_awards}")
         st.markdown("#### Players:")

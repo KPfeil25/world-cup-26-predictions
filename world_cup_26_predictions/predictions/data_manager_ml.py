@@ -1,6 +1,6 @@
 '''
 NAME:
-    data_manager - Module for loading and preprocessing soccer match data for predictive modeling
+    data_manager_ml - Module for loading and preprocessing soccer match data for predictive modeling
 
 DESCRIPTION:
     This module handles the data pipeline for the World Cup 2026 predictions model.
