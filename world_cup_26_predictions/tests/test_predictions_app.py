@@ -225,6 +225,8 @@ class TestPredictionsApp(unittest.TestCase):
         result = app.load_data()
         self.assertIsNone(result)
         mock_st_error.assert_called_once()
+        error_message = mock_st_error.call_args[0][0]
+        self.assertIn("Required data file not found", error_message)
 
     def test_get_country_code(self):
         """
