@@ -203,14 +203,15 @@ class TestPredictionsApp(unittest.TestCase):
         """
         Test successful data loading
         """
-        # Configure the mocks
         mock_path_join.return_value = 'mock/path'
         mock_read_csv.return_value = pd.DataFrame()
-        mock_joblib_load.return_value = MagicMock()
+        mock_model = MagicMock()
+        mock_le = MagicMock()
+        mock_joblib_load.side_effect = [mock_model, mock_le]
         result = app.load_data()
         self.assertIsNotNone(result)
-        self.assertEqual(mock_read_csv.call_count, 6)  # 6 CSV files
-        self.assertEqual(mock_joblib_load.call_count, 2)  # model and label encoder
+        self.assertEqual(mock_read_csv.call_count, 6)
+        self.assertEqual(mock_joblib_load.call_count, 2)
 
     @patch('os.path.join')
     @patch('pandas.read_csv')
