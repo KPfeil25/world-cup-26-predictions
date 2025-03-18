@@ -1,13 +1,43 @@
 """
-(should include a description, and a list and brief summary of all functions, 
-classes within. Please list the functions by name
+Team Analytics Module
+
+This module provides functions and visualizations for analyzing World Cup data using Streamlit.
+It includes data processing, filtering, performance comparison, goal distribution analysis, and 
+interactive visualizations.
+
+### Functions:
+- **process_match_data()**: Loads and cleans match data, merging team color information.
+- **get_team_colors(team, df)**: Retrieves a team's flag colors from the dataset.
+- **create_filters(matches_df)**: Generates Streamlit UI filters for team, year, and gender 
+selection.
+- **validate_data(df, team, team_2, gender, year)**: Checks if the selected filters have 
+valid data.
+- **team_performance_pie(team_name, team_2, df, gender, selected_year)**: Creates pie charts 
+for team performance.
+- **goal_distribution_by_year_type_side_by_side(df, team, team_2, selected_year, 
+selected_gender)**: 
+  Displays goal distribution over the years for one or two teams.
+- **plot_wc_comparison(df, country, gender, country_2)**: Generates a violin plot of score 
+distributions.
+- **world_cup_win_percentage_map(matches_df)**: Creates a world map showing World Cup win 
+percentages.
+- **plot_all_teams_summary(df)**: Displays top goal-scoring teams in a bar chart.
+- **show_fun_facts()**: Displays interesting World Cup trivia facts.
+- **display_trivia_section()**: Renders a trivia section for the Men's and Women's World Cups.
+- **display_chart(fig)**: Helper function for displaying Plotly charts with a consistent 
+layout.
+- **run_team_analytics_tab()**: Main function to execute the Streamlit analytics tab.
+
+### Usage:
+Imports to pages\analysis_tool.py for use in streamlit app.
 """
 
 import os
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import numpy as np
+
+pd.options.mode.chained_assignment = None
 
 
 ## data processing, color helper function, create filters for streamlit
@@ -73,90 +103,90 @@ def process_match_data():
 
     df_flags = pd.DataFrame(
         [
-            ('France', 'Blue', 'White', 'Red'),
-    ('United States', 'Red', 'White', 'Blue'),
-    ('Yugoslavia', 'Blue', 'White', 'Red'),
-    ('Romania', 'Blue', 'Yellow', 'Red'),
-    ('Argentina', 'Light Blue', 'White', 'Gold'),
-    ('Chile', 'Red', 'White', 'Blue'),
-    ('Uruguay', 'Blue', 'White', 'Yellow'),
-    ('Brazil', 'Green', 'Yellow', 'Blue'),
-    ('Paraguay', 'Red', 'White', 'Blue'),
-    ('Austria', 'Red', 'White', 'Red'),
-    ('Czechoslovakia', 'Blue', 'White', 'Red'),
-    ('Germany', 'Black', 'Red', 'Yellow'),
-    ('Hungary', 'Red', 'White', 'Green'),
-    ('Italy', 'Green', 'White', 'Red'),
-    ('Spain', 'Red', 'Yellow', 'Red'),
-    ('Sweden', 'Blue', 'Yellow', 'Blue'),
-    ('Switzerland', 'Red', 'White', 'Red'),
-    ('Cuba', 'Red', 'White', 'Blue'),
-    ('England', 'White', 'Red', 'White'),
-    ('West Germany', 'Black', 'Red', 'Yellow'),
-    ('Turkey', 'Red', 'White', 'Red'),
-    ('Northern Ireland', 'White', 'Red', 'White'),
-    ('Soviet Union', 'Red', 'Yellow', 'Red'),
-    ('Mexico', 'Green', 'White', 'Red'),
-    ('Wales', 'Red', 'White', 'Green'),
-    ('Portugal', 'Green', 'Red', 'Yellow'),
-    ('North Korea', 'Red', 'White', 'Blue'),
-    ('Peru', 'Red', 'White', 'Red'),
-    ('Belgium', 'Black', 'Yellow', 'Red'),
-    ('Bulgaria', 'White', 'Green', 'Red'),
-    ('East Germany', 'Black', 'Red', 'Yellow'),
-    ('Zaire', 'Green', 'Yellow', 'Red'),
-    ('Poland', 'White', 'Red', 'White'),
-    ('Australia', 'Blue', 'White', 'Red'),
-    ('Scotland', 'Blue', 'White', 'Blue'),
-    ('Netherlands', 'Red', 'White', 'Blue'),
-    ('Haiti', 'Blue', 'Red', 'White'),
-    ('Tunisia', 'Red', 'White', 'Red'),
-    ('Algeria', 'Green', 'White', 'Red'),
-    ('Honduras', 'Blue', 'White', 'Blue'),
-    ('Canada', 'Red', 'White', 'Red'),
-    ('Morocco', 'Red', 'Green', 'Red'),
-    ('South Korea', 'White', 'Black', 'Red'),
-    ('Iraq', 'Red', 'White', 'Black'),
-    ('Denmark', 'Red', 'White', 'Red'),
-    ('United Arab Emirates', 'Red', 'Green', 'Black'),
-    ('Costa Rica', 'Red', 'White', 'Blue'),
-    ('Cameroon', 'Green', 'Red', 'Yellow'),
-    ('Republic of Ireland', 'Green', 'White', 'Orange'),
-    ('China', 'Red', 'Yellow', 'Red'),
-    ('Japan', 'White', 'Red', 'White'),
-    ('Chinese Taipei', 'Blue', 'White', 'Red'),
-    ('Norway', 'Red', 'White', 'Blue'),
-    ('Colombia', 'Yellow', 'Blue', 'Red'),
-    ('Nigeria', 'Green', 'White', 'Green'),
-    ('Saudi Arabia', 'Green', 'White', 'Green'),
-    ('Bolivia', 'Red', 'Yellow', 'Green'),
-    ('Russia', 'White', 'Blue', 'Red'),
-    ('Greece', 'Blue', 'White', 'Blue'),
-    ('Jamaica', 'Black', 'Yellow', 'Green'),
-    ('South Africa', 'Green', 'Yellow', 'Black'),
-    ('Ghana', 'Red', 'Yellow', 'Green'),
-    ('Croatia', 'Red', 'White', 'Blue'),
-    ('Senegal', 'Green', 'Yellow', 'Red'),
-    ('Slovenia', 'White', 'Blue', 'Red'),
-    ('Ecuador', 'Yellow', 'Blue', 'Red'),
-    ('Trinidad and Tobago', 'Red', 'White', 'Black'),
-    ('Serbia and Montenegro', 'Red', 'Blue', 'White'),
-    ('Angola', 'Red', 'Black', 'Yellow'),
-    ('Czech Republic', 'White', 'Red', 'Blue'),
-    ('Togo', 'Green', 'Yellow', 'Red'),
-    ('Iran', 'Green', 'White', 'Red'),
-    ('Ivory Coast', 'Orange', 'White', 'Green'),
-    ('Ukraine', 'Blue', 'Yellow', 'Blue'),
-    ('New Zealand', 'Blue', 'Red', 'White'),
-    ('Serbia', 'Red', 'Blue', 'White'),
-    ('Slovakia', 'White', 'Blue', 'Red'),
-    ('Equatorial Guinea', 'Blue', 'White', 'Green'),
-    ('Bosnia and Herzegovina', 'Blue', 'Yellow', 'White'),
-    ('Thailand', 'Red', 'White', 'Blue'),
-    ('Egypt', 'Red', 'White', 'Black'),
-    ('Iceland', 'Blue', 'White', 'Red'),
-    ('Panama', 'Red', 'White', 'Blue'),
-    ('Qatar', 'Maroon', 'White', 'Maroon')
+            ("France", "Blue", "White", "Red"),
+            ("United States", "Red", "White", "Blue"),
+            ("Yugoslavia", "Blue", "White", "Red"),
+            ("Romania", "Blue", "Yellow", "Red"),
+            ("Argentina", "Light Blue", "White", "Gold"),
+            ("Chile", "Red", "White", "Blue"),
+            ("Uruguay", "Blue", "White", "Yellow"),
+            ("Brazil", "Green", "Yellow", "Blue"),
+            ("Paraguay", "Red", "White", "Blue"),
+            ("Austria", "Red", "White", "Red"),
+            ("Czechoslovakia", "Blue", "White", "Red"),
+            ("Germany", "Black", "Red", "Yellow"),
+            ("Hungary", "Red", "White", "Green"),
+            ("Italy", "Green", "White", "Red"),
+            ("Spain", "Red", "Yellow", "Red"),
+            ("Sweden", "Blue", "Yellow", "Blue"),
+            ("Switzerland", "Red", "White", "Red"),
+            ("Cuba", "Red", "White", "Blue"),
+            ("England", "White", "Red", "White"),
+            ("West Germany", "Black", "Red", "Yellow"),
+            ("Turkey", "Red", "White", "Red"),
+            ("Northern Ireland", "White", "Red", "White"),
+            ("Soviet Union", "Red", "Yellow", "Red"),
+            ("Mexico", "Green", "White", "Red"),
+            ("Wales", "Red", "White", "Green"),
+            ("Portugal", "Green", "Red", "Yellow"),
+            ("North Korea", "Red", "White", "Blue"),
+            ("Peru", "Red", "White", "Red"),
+            ("Belgium", "Black", "Yellow", "Red"),
+            ("Bulgaria", "White", "Green", "Red"),
+            ("East Germany", "Black", "Red", "Yellow"),
+            ("Zaire", "Green", "Yellow", "Red"),
+            ("Poland", "White", "Red", "White"),
+            ("Australia", "Blue", "White", "Red"),
+            ("Scotland", "Blue", "White", "Blue"),
+            ("Netherlands", "Red", "White", "Blue"),
+            ("Haiti", "Blue", "Red", "White"),
+            ("Tunisia", "Red", "White", "Red"),
+            ("Algeria", "Green", "White", "Red"),
+            ("Honduras", "Blue", "White", "Blue"),
+            ("Canada", "Red", "White", "Red"),
+            ("Morocco", "Red", "Green", "Red"),
+            ("South Korea", "White", "Black", "Red"),
+            ("Iraq", "Red", "White", "Black"),
+            ("Denmark", "Red", "White", "Red"),
+            ("United Arab Emirates", "Red", "Green", "Black"),
+            ("Costa Rica", "Red", "White", "Blue"),
+            ("Cameroon", "Green", "Red", "Yellow"),
+            ("Republic of Ireland", "Green", "White", "Orange"),
+            ("China", "Red", "Yellow", "Red"),
+            ("Japan", "White", "Red", "White"),
+            ("Chinese Taipei", "Blue", "White", "Red"),
+            ("Norway", "Red", "White", "Blue"),
+            ("Colombia", "Yellow", "Blue", "Red"),
+            ("Nigeria", "Green", "White", "Green"),
+            ("Saudi Arabia", "Green", "White", "Green"),
+            ("Bolivia", "Red", "Yellow", "Green"),
+            ("Russia", "White", "Blue", "Red"),
+            ("Greece", "Blue", "White", "Blue"),
+            ("Jamaica", "Black", "Yellow", "Green"),
+            ("South Africa", "Green", "Yellow", "Black"),
+            ("Ghana", "Red", "Yellow", "Green"),
+            ("Croatia", "Red", "White", "Blue"),
+            ("Senegal", "Green", "Yellow", "Red"),
+            ("Slovenia", "White", "Blue", "Red"),
+            ("Ecuador", "Yellow", "Blue", "Red"),
+            ("Trinidad and Tobago", "Red", "White", "Black"),
+            ("Serbia and Montenegro", "Red", "Blue", "White"),
+            ("Angola", "Red", "Black", "Yellow"),
+            ("Czech Republic", "White", "Red", "Blue"),
+            ("Togo", "Green", "Yellow", "Red"),
+            ("Iran", "Green", "White", "Red"),
+            ("Ivory Coast", "Orange", "White", "Green"),
+            ("Ukraine", "Blue", "Yellow", "Blue"),
+            ("New Zealand", "Blue", "Red", "White"),
+            ("Serbia", "Red", "Blue", "White"),
+            ("Slovakia", "White", "Blue", "Red"),
+            ("Equatorial Guinea", "Blue", "White", "Green"),
+            ("Bosnia and Herzegovina", "Blue", "Yellow", "White"),
+            ("Thailand", "Red", "White", "Blue"),
+            ("Egypt", "Red", "White", "Black"),
+            ("Iceland", "Blue", "White", "Red"),
+            ("Panama", "Red", "White", "Blue"),
+            ("Qatar", "Maroon", "White", "Maroon"),
         ],
         columns=["team", "team_color_1", "team_color_2", "team_color_3"],
     )
@@ -192,45 +222,34 @@ def process_match_data():
 
 def get_team_colors(team, df):
     """
-    Functionality: Retrieves team colors from matches_df,
-                   Uses correct column names: team_1_color_1, team_2_color_1, etc.
-    Arguments: team name of interest, matches_df
-    Return Values: colors of team
+    Functionality: gets team colors
+    Arguments: team name and df
+    Return Values: country flag colors
     Exceptions: none
     """
     if team in df["team_1"].values:
-        team_row = df[df["team_1"] == team].iloc[0]
+        team_row = df.loc[df["team_1"] == team].iloc[0]
+        prefix = "team_1"
+    elif team in df["team_2"].values:
+        team_row = df.loc[df["team_2"] == team].iloc[0]
+        prefix = "team_2"
+    else:
         return {
-            "primary": (
-                team_row["team_1_color_1"] if "team_1_color_1" in team_row else "blue"
-            ),
-            "secondary": (
-                team_row["team_1_color_2"] if "team_1_color_2" in team_row else "red"
-            ),
-            "tertiary": (
-                team_row["team_1_color_3"] if "team_1_color_3" in team_row else "gray"
-            ),
-        }
-    if team in df["team_2"].values:
-        team_row = df[df["team_2"] == team].iloc[0]
-        return {
-            "primary": (
-                team_row["team_2_color_1"] if "team_2_color_1" in team_row else "blue"
-            ),
-            "secondary": (
-                team_row["team_2_color_2"] if "team_2_color_2" in team_row else "red"
-            ),
-            "tertiary": (
-                team_row["team_2_color_3"] if "team_2_color_3" in team_row else "gray"
-            ),
+            "primary": "blue",
+            "secondary": "red",
+            "tertiary": "gray",
         }
 
-    return {"primary": "blue", "secondary": "red", "tertiary": "gray"}
+    return {
+        "primary": team_row.get(f"{prefix}_color_1", "blue"),
+        "secondary": team_row.get(f"{prefix}_color_2", "red"),
+        "tertiary": team_row.get(f"{prefix}_color_3", "gray"),
+    }
 
 
 def create_filters(matches_df):
     """
-    Functionality: Creates filters for UI based on df options 
+    Functionality: Creates filters for UI based on df options
     Arguments: dataframe of interest, matches_df
     Return Values: selected values
     Exceptions: none
@@ -240,31 +259,30 @@ def create_filters(matches_df):
         return None, None, None, None
 
     if "team_1" in matches_df.columns and "team_2" in matches_df.columns:
-    # Ensure columns are string type and drop NaN values
         team_1_set = set(matches_df["team_1"].dropna().astype(str))
         team_2_set = set(matches_df["team_2"].dropna().astype(str))
         teams = ["All Teams"] + sorted(team_1_set.union(team_2_set))
     else:
         st.error("Missing team data in the DataFrame.")
-        teams = []  # Default to an empty list
+        teams = []
 
-
-    # Create filters inside the tab
-    with st.expander("Select Filters", expanded=True):  # Using expander for a neat UI
+    with st.expander("Select Filters", expanded=True):
         st.subheader("Filters")
 
         selected_team = st.selectbox("Select Team:", teams)
 
-        second_team_options = ["None"] + teams if selected_team != "All Teams" else ["None"]
+        second_team_options = (
+            ["None"] + teams if selected_team != "All Teams" else ["None"]
+        )
         selected_team_2 = st.selectbox(
             "Compare with Another Team (Optional):", second_team_options, index=0
         )
         selected_team_2 = None if selected_team_2 == "None" else selected_team_2
 
-        selected_gender = st.radio("Select Gender:", ["Men", "Women", "All"])
+        selected_gender = st.radio("Select Gender:", ["All", "Men", "Women"])
 
         years = sorted(matches_df["year"].dropna().astype(int).unique())
-        filtered_years = years  # Default to all years
+        filtered_years = years
 
         if selected_gender == "Men":
             filtered_years = [y for y in years if y % 2 == 0]
@@ -277,12 +295,105 @@ def create_filters(matches_df):
     return selected_team, selected_team_2, selected_gender, selected_year
 
 
+def validate_data(df, team, team_2=None, gender="All", year="All Years"):
+    """
+    Functionality: Checks if the given filters have valid data in the DataFrame and
+    lists missing years.
+    Arguments: df (DataFrame), team (str), team_2 (str or None), gender (str), year
+    (str or int)
+    Returns: Filtered DataFrame (or None if no valid data is found)
+    """
+
+    mens_wc_years = list(range(1930, 2026, 4))
+    womens_wc_years = list(range(1991, 2026, 4))
+
+    if gender == "Men":
+        df = df[df["year"] % 2 == 0]
+    if gender == "Women":
+        df = df[df["year"] % 2 != 0]
+
+    if year != "All Years":
+        df = df[df["year"] == int(year)]
+
+    team_wc_years = set(
+        df[(df["home_team_name"] == team) | (df["away_team_name"] == team)]["year"]
+    )
+    team_missing_men = sorted(set(mens_wc_years) - team_wc_years)
+    team_missing_women = sorted(set(womens_wc_years) - team_wc_years)
+    team_2_missing_men, team_2_missing_women = [], []
+
+    if team_2:
+        team_2_wc_years = set(
+            df[(df["home_team_name"] == team_2) | (df["away_team_name"] == team_2)][
+                "year"
+            ]
+        )
+
+        team_2_missing_men = sorted(set(mens_wc_years) - team_2_wc_years)
+        team_2_missing_women = sorted(set(womens_wc_years) - team_2_wc_years)
+
+    # notate if missing data so user knows not error
+    if gender in ["Men", "All"] and team_missing_men:
+        st.info(
+            f"⚠️ **{team} (Men) did not appear in the World Cup in:** "
+            f"{', '.join(map(str, team_missing_men))}"
+        )
+
+    if gender in ["Women", "All"] and team_missing_women:
+        st.info(
+            f"⚠️ **{team} (Women) did not appear in the World Cup in:** "
+            f"{', '.join(map(str, team_missing_women))}"
+        )
+
+    if team_2:
+        if gender in ["Men", "All"] and team_2_missing_men:
+            st.info(
+                f"⚠️ **{team_2} (Men) did not appear in the World Cup in:** "
+                f"{', '.join(map(str, team_2_missing_men))}"
+            )
+
+        if gender in ["Women", "All"] and team_2_missing_women:
+            st.info(
+                f"⚠️ **{team_2} (Women) did not appear in the World Cup in:** "
+                f"{', '.join(map(str, team_2_missing_women))}"
+            )
+
+    # missing data case
+    team_data = df[(df["home_team_name"] == team) | (df["away_team_name"] == team)]
+
+    team_data_2 = (
+        df[(df["home_team_name"] == team_2) | (df["away_team_name"] == team_2)]
+        if team_2
+        else None
+    )
+
+    if team_data.empty and (not team_2 or team_data_2 is None or team_data_2.empty):
+        st.warning(
+            f"No match data found for {team} (or {team_2}) in the selected "
+            f"category: {gender}, Year: {year}."
+        )
+        return None
+    if team_data.empty:
+        st.warning(
+            f"No match data found for {team} in the selected category: {gender}, "
+            f"Year: {year}. Showing only {team_2}."
+        )
+        return team_data_2
+    if team_2 and team_data_2 is not None and team_data_2.empty:
+        st.warning(
+            f"No match data found for {team_2} in the selected category: {gender}, "
+            f"Year: {year}. Showing only {team}."
+        )
+        return team_data
+
+    return df
+
 
 ## Page when looking at statistics for one team or comparing two teams
 def team_performance_pie(team_name, team_2, df, gender, selected_year):
     """
-    Functionality: Creates pie chart comparing performance between teams 
-    Arguments: team name(s) of interest, data frame with info, gender, year 
+    Functionality: Creates pie chart comparing performance between teams
+    Arguments: team name(s) of interest, data frame with info, gender, year
     Return Values: pie chart of selected information
     Exceptions: none
     """
@@ -324,6 +435,16 @@ def team_performance_pie(team_name, team_2, df, gender, selected_year):
         fig = px.pie(
             data, names="Result", values="Count", title=f"Performance of {team_name}"
         )
+        fig.update_layout(
+            template="plotly_white",
+            paper_bgcolor="#E0E0E0",
+            plot_bgcolor="#E0E0E0",
+            font={"color": "black"},
+            xaxis={"showgrid": False, "color": "black"},
+            yaxis={"showgrid": True, "gridcolor": "gray", "color": "black"},
+            title_font={"color": "black"},
+            legend={"font": {"color": "black"}},
+        )
         st.plotly_chart(fig, use_container_width=True)
 
     if team_2:
@@ -332,21 +453,38 @@ def team_performance_pie(team_name, team_2, df, gender, selected_year):
             fig_2 = px.pie(
                 data_2, names="Result", values="Count", title=f"Performance of {team_2}"
             )
+            fig_2.update_layout(
+                template="plotly_white",
+                paper_bgcolor="#E0E0E0",
+                plot_bgcolor="#E0E0E0",
+                font={"color": "black"},
+                xaxis={"showgrid": False, "color": "black"},
+                yaxis={"showgrid": True, "gridcolor": "gray", "color": "black"},
+                title_font={"color": "black"},
+                legend={"font": {"color": "black"}},
+            )
             st.plotly_chart(fig_2, use_container_width=True)
 
 
-def goal_distribution_by_year_type_side_by_side(df, team, team_2, selected_year):
+def goal_distribution_by_year_type_side_by_side(
+    df, team, team_2, selected_year, selected_gender
+):
     """
-    Functionality: Bar chart comparing goal distribution for one/two teams 
-    Arguments: team name(s) of interest, data frame with info, years of interest 
+    Functionality: Bar chart comparing goal distribution for one/two teams with gender filtering
+    Arguments: team name(s) of interest, data frame with info, years and gender of interest
     Return Values: colors of team
     Exceptions: none
     """
+
+    if selected_gender == "Men":
+        df = df[df["year"] % 2 == 0]
+    elif selected_gender == "Women":
+        df = df[df["year"] % 2 != 0]
+
     team_data = df[(df["team_1"] == team) | (df["team_2"] == team)]
-    if team_2:
-        team_data_2 = df[(df["team_1"] == team_2) | (df["team_2"] == team_2)]
-    else:
-        team_data_2 = None
+    team_data_2 = (
+        df[(df["team_1"] == team_2) | (df["team_2"] == team_2)] if team_2 else None
+    )
 
     if selected_year != "All Years":
         team_data = team_data[team_data["year"] == selected_year]
@@ -366,15 +504,14 @@ def goal_distribution_by_year_type_side_by_side(df, team, team_2, selected_year)
     combined_data = team_data.groupby("year")["goals"].sum().reset_index()
     combined_data["Team"] = team
 
+    # if second team to compare
     if team_2:
         team_colors_2 = get_team_colors(team_2, df)
         color_map[team_2] = team_colors_2["primary"]
 
         team_data_2["goals"] = team_data_2.apply(
-            lambda row: (
-                row["home_team_score"]
-                if row["team_1"] == team_2
-                else row["away_team_score"]
+            lambda r: (
+                r["home_team_score"] if r["team_1"] == team_2 else r["away_team_score"]
             ),
             axis=1,
         )
@@ -384,6 +521,7 @@ def goal_distribution_by_year_type_side_by_side(df, team, team_2, selected_year)
 
         combined_data = pd.concat([combined_data, combined_data_2])
 
+    # plot
     fig = px.bar(
         combined_data,
         x="year",
@@ -394,55 +532,71 @@ def goal_distribution_by_year_type_side_by_side(df, team, team_2, selected_year)
         barmode="group",
     )
 
+    fig.update_layout(
+        template="plotly_white",
+        paper_bgcolor="#E0E0E0",
+        plot_bgcolor="#E0E0E0",
+        font={"color": "black"},
+        xaxis={"showgrid": False, "color": "black"},
+        yaxis={"showgrid": True, "gridcolor": "gray", "color": "black"},
+        title_font={"color": "black"},
+        legend={"font": {"color": "black"}},
+    )
+
     return fig
 
-def plot_wc_comparison(df, country, country_2=None):
+
+def plot_wc_comparison(df, country, gender, country_2=None):
     """
-    Functionality: Creates violin plot comparing score distributions
-    Arguments: team name of interest, matches_df
+    Functionality: Creates a violin plot comparing score distributions with gender filtering.
+    Arguments: team name of interest, matches_df, gender
     Return Values: plot
     Exceptions: none
     """
+
+    if gender == "Men":
+        df = df[df["year"] % 2 == 0]
+    elif gender == "Women":
+        df = df[df["year"] % 2 != 0]
+
     country_data = df[
         (df["home_team_name"] == country) | (df["away_team_name"] == country)
     ]
+
+    country_data_2 = None
     if country_2:
         country_data_2 = df[
             (df["home_team_name"] == country_2) | (df["away_team_name"] == country_2)
         ]
-    else:
-        country_data_2 = None
 
     if country_data.empty:
-        st.warning(f"No match data found for {country}.")
+        st.warning(
+            f"No match data found for {country} in the selected gender category."
+        )
         return None
 
-    country_data["wc_type"] = country_data["year"].apply(
+    # assign World Cup type based on the year
+    country_data.loc[:, "wc_type"] = country_data["year"].apply(
         lambda x: "Men's WC" if x % 2 == 0 else "Women's WC"
     )
 
+    # create DataFrame for scores
     scores_df = pd.DataFrame(
         {
             "score": pd.concat(
                 [country_data["home_team_score"], country_data["away_team_score"]]
             ),
             "team": [country] * (len(country_data) * 2),
-            "wc_type": [
-                "Men's WC" if year % 2 == 0 else "Women's WC"
-                for year in country_data["year"]
-            ]
-            * 2,
+            "wc_type": country_data["wc_type"].tolist() * 2,
         }
     )
 
     team_colors = get_team_colors(country, df)
-
     color_map = {
-        country: team_colors["primary"] if pd.notna(team_colors["primary"]) else "blue",
-        country_2: "green" if country_2 else "red",
+        country: team_colors["primary"] if pd.notna(team_colors["primary"]) else "blue"
     }
 
-    if country_2 and not country_data_2.empty:
+    if country_2 and country_data_2 is not None and not country_data_2.empty:
         country_data_2["wc_type"] = country_data_2["year"].apply(
             lambda x: "Men's WC" if x % 2 == 0 else "Women's WC"
         )
@@ -456,11 +610,7 @@ def plot_wc_comparison(df, country, country_2=None):
                     ]
                 ),
                 "team": [country_2] * (len(country_data_2) * 2),
-                "wc_type": [
-                    "Men's WC" if year % 2 == 0 else "Women's WC"
-                    for year in country_data_2["year"]
-                ]
-                * 2,
+                "wc_type": country_data_2["wc_type"].tolist() * 2,
             }
         )
 
@@ -468,11 +618,18 @@ def plot_wc_comparison(df, country, country_2=None):
 
         team_colors_2 = get_team_colors(country_2, df)
         color_map[country_2] = (
-            team_colors_2["primary"] if pd.notna(team_colors_2["primary"]) else "green"
+            team_colors_2.get("primary")
+            if pd.notna(team_colors_2.get("primary"))
+            else "green"
         )
 
-    scores_df["team_color"] = scores_df["team"].map(color_map)
-    scores_df["team_color"].replace({np.nan: "gray"}, inplace=True)
+    scores_df.loc[:, "team_color"] = scores_df["team"].map(color_map)
+    scores_df.loc[:, "team_color"] = scores_df["team_color"].fillna("gray")
+
+    if gender == "Men":
+        scores_df = scores_df[scores_df["wc_type"] == "Men's WC"].copy()
+    elif gender == "Women":
+        scores_df = scores_df[scores_df["wc_type"] == "Women's WC"].copy()
 
     fig_violin = px.violin(
         scores_df,
@@ -483,6 +640,17 @@ def plot_wc_comparison(df, country, country_2=None):
         labels={"team": "Team", "score": "Score", "wc_type": "World Cup Type"},
         color_discrete_map=color_map,
         category_orders={"team": [country] + ([country_2] if country_2 else [])},
+    )
+
+    fig_violin.update_layout(
+        template="plotly_white",
+        paper_bgcolor="#E0E0E0",
+        plot_bgcolor="#E0E0E0",
+        font={"color": "black"},
+        xaxis={"showgrid": False, "color": "black"},
+        yaxis={"showgrid": True, "gridcolor": "gray", "color": "black"},
+        title_font={"color": "black"},
+        legend={"font": {"color": "black"}},
     )
 
     return fig_violin
@@ -539,55 +707,59 @@ def world_cup_win_percentage_map(matches_df):
     )
 
     fig.update_layout(
-        geo = {
-    "showcoastlines": True,
-    "showland": True,
-    "landcolor": "lightgray"},
-        coloraxis_colorbar = {"title":"Win %"},
+        geo={"showcoastlines": True, "showland": True, "landcolor": "lightgray"},
+        coloraxis_colorbar={"title": "Win %"},
     )
 
     return fig
 
 
+##helper funcs to reduce local vars
 def plot_all_teams_summary(df):
     """
     Functionality: Plots teams with most wins
     Arguments: matches_df
-    Return Values: plot returned 
-    Exceptions: none
+    Return Values: plot returned
     """
-    top_teams = df.groupby("home_team_name")["home_team_score"].sum().reset_index()
-    away_teams = df.groupby("away_team_name")["away_team_score"].sum().reset_index()
-
-    top_teams.rename(
-        columns={"home_team_name": "team", "home_team_score": "Total Goals"},
-        inplace=True,
+    # combine home and away team goals
+    team_goals = (
+        df.melt(
+            id_vars=["home_team_score", "away_team_score"],
+            value_vars=["home_team_name", "away_team_name"],
+            var_name="location",
+            value_name="team",
+        )
+        .assign(
+            goals=lambda x: x.apply(
+                lambda row: (
+                    row["home_team_score"]
+                    if row["location"] == "home_team_name"
+                    else row["away_team_score"]
+                ),
+                axis=1,
+            )
+        )
+        .groupby("team", as_index=False)["goals"]
+        .sum()
     )
-    away_teams.rename(
-        columns={"away_team_name": "team", "away_team_score": "Total Goals"},
-        inplace=True,
-    )
 
-    top_teams = pd.concat([top_teams, away_teams], ignore_index=True)
-
-    top_teams = top_teams.groupby("team")["Total Goals"].sum().reset_index()
-
-    top_teams = top_teams.sort_values(by="Total Goals", ascending=False).head(15)
+    top_teams = team_goals.sort_values(by="goals", ascending=False).head(15)
 
     fig = px.bar(
         top_teams,
         x="team",
-        y="Total Goals",
+        y="goals",
         title="Top 15 Goal-Scoring Teams in World Cup History",
-        labels={"team": "Team", "Total Goals": "Goals Scored"},
+        labels={"team": "Team", "goals": "Goals Scored"},
         color_discrete_sequence=["gold"],
     )
 
     return fig
 
+
 def show_fun_facts():
     """
-    Functionality: Displays world cup fun facts 
+    Functionality: Displays world cup fun facts
     Arguments: none
     Return Values: none
     Exceptions: none
@@ -606,42 +778,78 @@ def show_fun_facts():
         st.markdown(f"✅ {fact}")
 
 
-## Run App
+def display_trivia_section():
+    """Displays the trivia section for Men's & Women's World Cups."""
+    st.markdown("---")
+    st.subheader("Men & Women World Cup Trivia")
+
+    trivia_data = {
+        "Men's World Cup": [
+            ("🏟️ First Edition", "1930"),
+            ("🗓️ Total Tournaments", "22"),
+            ("🏆 Most Titles", "Brazil (5)"),
+            ("👑 Current Champion", "Argentina (2022)"),
+        ],
+        "Women's World Cup": [
+            ("🏟️ First Edition", "1991"),
+            ("🗓️ Total Tournaments", "9"),
+            ("🏆 Most Titles", "USA (4)"),
+            ("👑 Current Champion", "Spain (2023)"),
+        ],
+    }
+
+    for section, metrics in trivia_data.items():
+        st.subheader(section)
+        cols = st.columns(4)
+        for col, (label, value) in zip(cols, metrics):
+            with col:
+                st.metric(label, value)
+
+    st.markdown("---")
+
+
+def display_chart(fig):
+    """Helper function to display Plotly charts with consistent settings."""
+    if fig:
+        st.plotly_chart(fig, use_container_width=True)
+
+
+##run app
 def run_team_analytics_tab():
-    """
-    Functionality: Runs the Team Analytics tab in the Streamlit app.
-    Arguments: none
-    Return Values: none
-    Exceptions: none    
-    """
-    st.header("⚽ Team Analytics")
-
-    matches_df, _team_df = process_match_data()
-
+    """Runs the Team Analytics tab in the Streamlit app."""
+    matches_df, _ = process_match_data()
     selected_team, selected_team_2, selected_gender, selected_year = create_filters(
         matches_df
     )
 
     if selected_team == "All Teams":
         st.subheader("🗺️ World Cup Team Win Percentages")
-        world_map_fig = world_cup_win_percentage_map(matches_df)
-        if world_map_fig:
-            st.plotly_chart(world_map_fig, use_container_width=True)
+        display_chart(world_cup_win_percentage_map(matches_df))
 
         st.subheader("📊 Top Goal-Scoring Teams")
-        summary_fig = plot_all_teams_summary(matches_df)
-        if summary_fig:
-            st.plotly_chart(summary_fig, use_container_width=True)
+        display_chart(plot_all_teams_summary(matches_df))
 
         show_fun_facts()
+        display_trivia_section()
 
     else:
-        st.subheader("📈 Goal Distribuion Over the Years")
-        goal_dist_fig = goal_distribution_by_year_type_side_by_side(
-            matches_df, selected_team, selected_team_2, selected_year
+        # Validate data before proceeding
+        filtered_df = validate_data(
+            matches_df, selected_team, selected_team_2, selected_gender, selected_year
         )
-        if goal_dist_fig:
-            st.plotly_chart(goal_dist_fig, use_container_width=True)
+        if filtered_df is None:
+            return
+
+        st.subheader("📈 Goal Distribution Over the Years")
+        display_chart(
+            goal_distribution_by_year_type_side_by_side(
+                matches_df,
+                selected_team,
+                selected_team_2,
+                selected_year,
+                selected_gender,
+            )
+        )
 
         st.subheader(f"🏆 {selected_gender} Team Performance Breakdown")
         team_performance_pie(
@@ -649,19 +857,12 @@ def run_team_analytics_tab():
         )
 
         st.subheader(f"⚽ {selected_team} Match Score Distribution")
-        violin_fig = plot_wc_comparison(matches_df, selected_team, selected_team_2)
-        if violin_fig:
-            st.plotly_chart(violin_fig, use_container_width=True)
-
-    st.subheader("🌍 World Cup Trivia")
-    col1, col2 = st.columns(2)
-    with col1:
-        st.metric("🏆 Most Titles", "Brazil (5)")
-        st.metric("⚽ Most Goals Scored", "Germany")
-    with col2:
-        st.metric("🛡️ Best Defensive Record", "Italy")
-        st.metric("🎖️ Most Final Appearances", "Germany (8)")
+        display_chart(
+            plot_wc_comparison(
+                matches_df, selected_team, selected_gender, selected_team_2
+            )
+        )
 
 
-if __name__ == "__main__":
-    run_team_analytics_tab()
+# if __name__ == "__main__":
+#   run_team_analytics_tab()
