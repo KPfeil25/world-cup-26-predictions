@@ -188,10 +188,14 @@ class TestDataManagerML(unittest.TestCase):
             self.sample_players
         )
         # Mock the feature addition functions
-        with patch('predictions.data_manager_ml.feature_addition_rankings', return_value=matches.copy()), \
-             patch('predictions.data_manager_ml.feature_addition_temperature', return_value=matches.copy()), \
-             patch('predictions.data_manager_ml.feature_addition_players', return_value=matches.copy()), \
-             patch('predictions.data_manager_ml.feature_addition_awards', return_value=matches.assign(
+        with patch('predictions.data_manager_ml.feature_addition_rankings', 
+                   return_value=matches.copy()), \
+             patch('predictions.data_manager_ml.feature_addition_temperature', 
+                   return_value=matches.copy()), \
+             patch('predictions.data_manager_ml.feature_addition_players', 
+                   return_value=matches.copy()), \
+             patch('predictions.data_manager_ml.feature_addition_awards', 
+                   return_value=matches.assign(
                  home_team_award_count=2,
                  away_team_award_count=1,
                  home_player_id=101,
