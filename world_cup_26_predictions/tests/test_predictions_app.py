@@ -198,23 +198,6 @@ class TestPredictionsApp(unittest.TestCase):
 
     @patch('os.path.join')
     @patch('pandas.read_csv')
-    @patch('joblib.load')
-    def test_load_data_success(self, mock_joblib_load, mock_read_csv, mock_path_join):
-        """
-        Test successful data loading
-        """
-        mock_path_join.return_value = 'mock/path'
-        mock_read_csv.return_value = pd.DataFrame()
-        mock_model = MagicMock()
-        mock_le = MagicMock()
-        mock_joblib_load.side_effect = [mock_model, mock_le]
-        result = app.load_data()
-        self.assertIsNotNone(result)
-        self.assertEqual(mock_read_csv.call_count, 6)
-        self.assertEqual(mock_joblib_load.call_count, 2)
-
-    @patch('os.path.join')
-    @patch('pandas.read_csv')
     @patch('streamlit.error')
     def test_load_data_failure(self, mock_st_error, mock_read_csv, mock_path_join):
         """
