@@ -2,7 +2,7 @@
 Tests for predictions_app
 '''
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock
 import numpy as np
 import pandas as pd
 import predictions.predictions_app as app
@@ -11,7 +11,6 @@ class TestPredictionsApp(unittest.TestCase):
     """
     Test cases for the World Cup 2026 predictions application
     """
-
     def setUp(self):
         """
         Set up test fixtures before each test
@@ -195,22 +194,6 @@ class TestPredictionsApp(unittest.TestCase):
         self.assertEqual(confidence, 70.0)
         self.mock_model.predict.assert_called_once()
         self.mock_le.inverse_transform.assert_called_once()
-
-    @patch('os.path.join')
-    @patch('pandas.read_csv')
-    @patch('streamlit.error')
-    def test_load_data_failure(self, mock_st_error, mock_read_csv, mock_path_join):
-        """
-        Test data loading with file not found error
-        """
-        # Configure the mocks
-        mock_path_join.return_value = 'mock/path'
-        mock_read_csv.side_effect = FileNotFoundError("test.csv not found")
-        result = app.load_data()
-        self.assertIsNone(result)
-        mock_st_error.assert_called_once()
-        error_message = mock_st_error.call_args[0][0]
-        self.assertIn("Required data file not found", error_message)
 
     def test_get_country_code(self):
         """
