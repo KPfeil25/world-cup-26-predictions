@@ -5,7 +5,7 @@ Streamlit page for Player and Team Analytics, leveraging data_manager and player
 import streamlit as st
 
 # Local imports (relative import from the same package)
-from data_manager import load_data, create_advanced_player_stats, filter_players
+from player_analytics.data_manager import load_data, create_advanced_player_stats, filter_players
 import player_analytics.player_analytics as visuals
 
 

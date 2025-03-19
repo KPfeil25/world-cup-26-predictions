@@ -7,11 +7,11 @@ import unittest
 import shutil
 import pandas as pd
 
-from data_manager import (
+from player_analytics.data_manager import (
     load_data,
     create_advanced_player_stats,
     filter_players,
-    _fix_name  # testing the private helper explicitly if desired
+    _fix_name
 )
 
 

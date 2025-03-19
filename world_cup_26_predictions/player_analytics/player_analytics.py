@@ -88,7 +88,7 @@ def _bar_chart(df, x_col, y_col, title=""):
         labels=LABELS,
     )
     fig.update_layout(
-        title_x=0.5,
+        title_x=0.3,
         xaxis_title=LABELS[x_col],
         yaxis_title=LABELS[y_col],
         template="plotly_white",
@@ -361,8 +361,8 @@ def plot_comparison_radar(player_stats, selected_players):
             )
         )
     fig.update_layout(
-        title="Player Comparison Radar",
-        title_x=0.5,
+        title="Player Comparison",
+        title_x=0.3,
         polar={"radialaxis": {"visible": True}},
         showlegend=True,
     )
@@ -390,7 +390,7 @@ def plot_top_clutch_scorers(player_stats, top_n=5):
 
     )
     fig.update_layout(
-        title_x=0.5,
+        title_x=0.3,
         xaxis_title="Clutch Goals",
         yaxis_title="Player Name",
         plot_bgcolor="#e5ecf6",
@@ -420,7 +420,7 @@ def plot_top_impact_players(player_stats, top_n=5):
         labels=LABELS,
     )
     fig.update_layout(
-        title_x=0.5,
+        title_x=0.3,
         xaxis_title="Goals After Sub",
         yaxis_title="Player Name",
         plot_bgcolor="#e5ecf6",
