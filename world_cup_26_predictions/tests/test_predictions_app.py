@@ -401,7 +401,8 @@ class TestPredictionsApp(unittest.TestCase):
         with patch('streamlit.button', return_value=True), patch('streamlit.markdown'):
             app.handle_prediction(match_settings, self.data_dict, MagicMock())
         stadium_map = {101: 'Stadium A', 102: 'Stadium B'}
-        with patch('streamlit.selectbox', side_effect=['Men', 'Brazil', 'Germany', 2018, 2018, 0]), \
+        with patch('streamlit.selectbox', side_effect=['Men', 'Brazil',
+                                                       'Germany', 2018, 2018, 0]), \
              patch('streamlit.slider', return_value=25), \
              patch('streamlit.markdown'):
             match_settings = app.configure_match_settings(self.data_dict, stadium_map, MagicMock())
