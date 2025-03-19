@@ -12,7 +12,7 @@ def main():
     Sets up a tabbed interface with a Player Analytics and a Team Analytics tab
     """
 
-    st.set_page_config(page_title="World Cup Player Analytics", layout="wide")
+    st.set_page_config(page_title="World Cup Player Analytics", layout="wide", page_icon="⚽")
     st.title("World Cup 2026 Player Analytics")
 
     # Create tabs for navigation
