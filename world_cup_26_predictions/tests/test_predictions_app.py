@@ -401,7 +401,7 @@ class TestPredictionsApp(unittest.TestCase):
         with patch('streamlit.button', return_value=True), patch('streamlit.markdown'):
             app.handle_prediction(match_settings, self.data_dict, MagicMock())
         stadium_map = {101: 'Stadium A', 102: 'Stadium B'}
-        with patch('streamlit.selectbox', side_effect=['Men', 'Brazil', 'Germany', 2018, 2018]), \
+        with patch('streamlit.selectbox', side_effect=['Men', 'Brazil', 'Germany', 2018, 2018, 0]), \
              patch('streamlit.slider', return_value=25), \
              patch('streamlit.markdown'):
             match_settings = app.configure_match_settings(self.data_dict, stadium_map, MagicMock())
@@ -409,7 +409,8 @@ class TestPredictionsApp(unittest.TestCase):
             self.assertEqual(match_settings['away_team'], 'Germany')
             self.assertEqual(match_settings['temperature'], 25)
             self.assertEqual(match_settings['gender'], 'Men')
-
+            self.assertIn('stadium_id', match_settings)
+            self.assertIn('stadium_name', match_settings)
 
 if __name__ == '__main__':
     unittest.main()
