@@ -19,7 +19,7 @@ def main():
     tabs = st.tabs(["Player Analytics", "Team Analytics"])
 
     with tabs[0]:
-        # Displays the playeranalytics page
+        # Displays the player analytics page
         run_analytics_tab()
 
     with tabs[1]:

@@ -1,5 +1,40 @@
 """
-Streamlit page for Player and Team Analytics, leveraging data_manager and player_analytics modules.
+Module: player_team_analytics_tab.py
+Overview:
+    This module implements a Streamlit-based dashboard for Player Analytics, leveraging the
+    functionalities of the data_manager and player_analytics modules to load, process,
+    and visualize player based statistics.
+    
+    The dashboard provides an interactive web interface that allows users to:
+      - Apply filters (by gender, continent, and position) to narrow down player statistics.
+      - View key leaderboards such as Top Scorers, Top Knockout Scorers, Goals per Appearance,
+      and Most Awarded players.
+      - Explore additional analytics including best penalty conversion, highest card rate,
+      and substitution patterns.
+      - Access position-specific leaderboards for Goalkeepers, Defenders, Midfielders,
+      and Forwards.
+      - Compare two selected players side-by-side using core metrics and radar charts.
+      - Display interesting World Cup trivia for both men's and women's competitions.
+      - Highlight players who score in clutch situations (75+ minute goals).
+    
+Dependencies:
+    The module leverages Streamlit for rendering interactive components and Plotly for creating
+    visually appealing charts.
+    Caching is used to optimize data loading and processing, minimizing re-computation
+    based on user interactions.
+    - streamlit: For building the interactive web application.
+    - player_analytics.data_manager: For loading data and creating advanced player statistics.
+    - player_analytics.player_analytics: For generating a variety of visualizations based
+    on player data.
+    
+Usage Example:
+    To run the dashboard, execute the following command in your terminal:
+    
+        Import the module and call the 'run_analytics_tab' function.
+        The function will render the Player Analytics page with various interactive components.
+    
+    However, for this project, the dashboard is integrated within the main application, in the
+    'analysis_tool' module.
 """
 
 import streamlit as st

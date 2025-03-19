@@ -1,6 +1,67 @@
 """
-Data management module for loading and transforming player statistics from
-CSV files related to World Cup data.
+Overview:
+    This module is responsible for loading and transforming player statistics data from
+    various CSV files with historical World Cup data. It provides functions to load
+    multiple CSV files from a specified directory, clean and merge the data, and
+    generate an advanced player statistics DataFrame. 
+    The transformations include computing various metrics such as total goals, appearances,
+    knockout goals, goals per appearance, card counts, penalty conversion rates, awards,
+    and substitution patterns, clutch goals, and mapping primary teams to continents.
+
+Key Functionalities:
+    - Loading Data:
+        * load_data: Loads CSV files from a specified directory and returns a dictionary
+        of DataFrames.
+    - Data Cleaning and Preparation:
+        * _fix_name: Cleans raw player names by trimming, lowercasing, and handling
+        non-applicable values.
+        * _prepare_player_base: Constructs the base DataFrame with core player details
+        (e.g., full name, birth date, and position flags).
+    - Merging and Calculating Metrics:
+        * _merge_appearances: Adds total appearance counts to the player statistics.
+        * _merge_goals: Merges total goals data from the goals CSV.
+        * _merge_knockout_goals: Computes knockout-stage goals by combining goals and match data.
+        * _add_goals_per_appearance: Calculates the ratio of goals per appearance.
+        * _merge_cards: Aggregates booking (card) data and computes cards per appearance.
+        * _merge_penalties: Aggregates penalty kick data to compute attempts, conversions,
+        and conversion rates.
+        * _merge_awards: Counts awards won by players.
+        * _merge_substitutions: Incorporates substitution patterns including times subbed
+        on/off and subbed-on goals.
+        * _merge_clutch_goals: Calculates "clutch" goals (scored in the final 15 minutes of
+        regulation time).
+        * _merge_primary_team: Associates players with their primary team, confederation,
+        and continent.
+    - Advanced Player Statistics:
+        * create_advanced_player_stats: Integrates all the above metrics into a comprehensive
+        DataFrame with one row per player.
+    - Filtering:
+        * filter_players: Provides a subset of the player statistics DataFrame based
+        on gender, continent, and position filters.
+
+Dependencies:
+    - os: For handling file paths and checking file existence.
+    - pandas: For data manipulation and analysis.
+    - numpy: For handling numerical operations and missing data.
+
+Usage Example:
+    To load and transform World Cup data into an advanced player statistics DataFrame:
+
+        from data_manager import load_data, create_advanced_player_stats, filter_players
+
+        # Load data from the "data" directory
+        data_frames = load_data("data")
+
+        # Create advanced player statistics
+        player_stats = create_advanced_player_stats(data_frames)
+
+        # Optionally filter the player_stats DataFrame
+        filtered_stats = filter_players(player_stats, gender="Men", continent="Europe",
+        position="Forward")
+
+    The resulting DataFrame 'player_stats' contains advanced performance metrics and
+    is ready for further analysis or visualization. In this project, we use the data
+    to create a interactive visualization in the 'player_analytics' module.
 """
 
 import os
