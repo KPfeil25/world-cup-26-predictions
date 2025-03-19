@@ -365,7 +365,9 @@ class TestPredictionsApp(unittest.TestCase):
             'away_team': 'Germany',
             'stadium_name': 'Stadium A',
             'stadium_id': 101,
-            'temperature': 25
+            'temperature': 25,
+            'home_year': 2018,
+            'away_year': 2018
         }
         with patch('streamlit.markdown') as mock_markdown:
             app.display_match_details(match_info, self.data_dict)
