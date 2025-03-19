@@ -2,7 +2,7 @@
 Tests for predictions_app
 '''
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 import numpy as np
 import pandas as pd
 import predictions.predictions_app as app
@@ -202,6 +202,170 @@ class TestPredictionsApp(unittest.TestCase):
         self.assertEqual(app.get_country_code('Brazil'), 'br')
         self.assertEqual(app.get_country_code('United States'), 'us')
         self.assertIsNone(app.get_country_code('Unknown Country'))
+
+    def test_get_player_info(self):
+        """
+        Test retrieving player info for match prediction
+        """
+        home_player_id, away_player_id, position_code = app.get_player_info(
+            'Brazil', 'Germany', self.sample_players)
+        self.assertEqual(home_player_id, 1001)
+        self.assertEqual(away_player_id, 1002)
+        self.assertEqual(position_code, 'FW')
+        home_player_id, away_player_id, position_code = app.get_player_info(
+            'Brazil', 'Germany', pd.DataFrame())
+        self.assertTrue(np.isnan(home_player_id))
+        self.assertTrue(np.isnan(away_player_id))
+        self.assertEqual(position_code, 'GK')
+        home_player_id, away_player_id, position_code = app.get_player_info(
+            'Spain', 'Italy', self.sample_players)
+        self.assertTrue(np.isnan(home_player_id))
+        self.assertTrue(np.isnan(away_player_id))
+        self.assertEqual(position_code, 'FW')
+
+    def test_prepare_visualization_data(self):
+        """
+        Test preparation of visualization data
+        """
+        # Test home team win scenario
+        match_result = {
+            'home_team': 'Brazil',
+            'away_team': 'Germany',
+            'home_year': 2018,
+            'away_year': 2018,
+            'result': 'win',
+            'confidence': 80.0
+        }
+        result_df = app.prepare_visualization_data(match_result)
+        self.assertEqual(len(result_df), 4)
+        home_win_prob = result_df[(result_df['Team'] == 'Brazil (2018)') &
+                                 (result_df['Outcome'] == 'Win Probability')]['Probability'].iloc[0]
+        self.assertEqual(home_win_prob, 80.0)
+        match_result['result'] = 'loss'
+        result_df = app.prepare_visualization_data(match_result)
+        away_win_prob = result_df[(result_df['Team'] == 'Germany (2018)') &
+                                 (result_df['Outcome'] == 'Win Probability')]['Probability'].iloc[0]
+        self.assertEqual(away_win_prob, 80.0)
+        match_result['result'] = 'draw'
+        result_df = app.prepare_visualization_data(match_result)
+        draw_prob = result_df[(result_df['Team'] == 'Brazil (2018)') &
+                             (result_df['Outcome'] == 'Draw Probability')]['Probability'].iloc[0]
+        self.assertEqual(draw_prob, 80.0)
+
+    def test_get_filtered_teams(self):
+        """
+        Test filtering teams by gender
+        """
+        men_teams = app.get_filtered_teams(self.sample_matches, 'Men')
+        self.assertEqual(len(men_teams), 4)
+        self.assertIn('Brazil', men_teams)
+        self.assertIn('France', men_teams)
+        women_teams = app.get_filtered_teams(self.sample_matches, 'Women')
+        self.assertEqual(len(women_teams), 4)
+        self.assertIn('USA', women_teams)
+        self.assertIn('Germany', women_teams)
+
+    def test_prepare_stadium_options(self):
+        """
+        Test preparation of stadium selection options
+        """
+        stadium_map = {101: 'Maracanã', 102: 'Camp Nou'}
+        stadium_options, stadium_display = app.prepare_stadium_options(
+            self.sample_matches, stadium_map)
+        self.assertEqual(len(stadium_options), 4)
+        self.assertEqual(len(stadium_display), 4)
+        self.assertIn(101, stadium_options)
+        self.assertTrue(any('Maracanã' in display for display in stadium_display))
+        self.assertTrue(any('Stadium 103' in display for display in stadium_display))
+
+    def test_get_players_by_year(self):
+        """
+        Test helper function for retrieving players by year
+        """
+        with patch('predictions.predictions_app._get_players_by_year') as mock_get_players:
+            # Set up the mock's return values for different test cases
+            def side_effect(players_df, team, year):
+                if team == 'Brazil' and year == 2026:
+                    return ['Neymar']
+                if team == 'France' and year == 2018:
+                    return ['Mbappé']
+                if team == 'Spain':
+                    return ['No players found for this team/year']
+                if isinstance(players_df, pd.DataFrame) and players_df.empty:
+                    return ['No players found for this team/year']
+                return []
+            mock_get_players.side_effect = side_effect
+            players = app.get_team_players('Brazil', 'Men', 2026, self.sample_players)
+            self.assertEqual(len(players), 1)
+            self.assertEqual(players[0], 'Neymar')
+            players = app.get_team_players('France', 'Men', 2018, self.sample_players)
+            self.assertEqual(len(players), 1)
+            self.assertEqual(players[0], 'Mbappé')
+            players = app.get_team_players('Spain', 'Men', 2018, self.sample_players)
+            self.assertEqual(players[0], 'No players found for this team/year')
+            players = app.get_team_players('Brazil', 'Men', 2018, pd.DataFrame())
+            self.assertEqual(players[0], 'No players found for this team/year')
+            mock_get_players.assert_called()
+
+    def test_display_outcome(self):
+        """
+        Test outcome display function (mock test)
+        """
+        # This is a mock test since the function uses streamlit
+        with unittest.mock.patch('streamlit.success') as mock_success, \
+             unittest.mock.patch('streamlit.error') as mock_error, \
+             unittest.mock.patch('streamlit.info') as mock_info:
+            app.display_outcome('Brazil', 'Germany', 'win')
+            mock_success.assert_called_once()
+            mock_error.assert_not_called()
+            mock_info.assert_not_called()
+            mock_success.reset_mock()
+            app.display_outcome('Brazil', 'Germany', 'away team win')
+            mock_success.assert_not_called()
+            mock_error.assert_called_once()
+            mock_info.assert_not_called()
+            mock_error.reset_mock()
+            app.display_outcome('Brazil', 'Germany', 'draw')
+            mock_success.assert_not_called()
+            mock_error.assert_not_called()
+            mock_info.assert_called_once()
+
+    def test_create_match_data_edge_cases(self):
+        """
+        Test match data creation with edge cases
+        """
+        # Missing team in rankings
+        match_info = {
+            'home_team': 'Unknown Team',
+            'away_team': 'Germany',
+            'stadium_id': 101,
+            'temperature': 25,
+            'gender': 'Men'
+        }
+        match_data = app.create_match_data(match_info, self.data_dict)
+        self.assertEqual(match_data['home_team_name'].iloc[0], 'Unknown Team')
+        self.assertEqual(match_data['home_team_rank'].iloc[0], 50)
+        match_info = {
+            'home_team': 'Brazil',
+            'away_team': 'Germany',
+            'stadium_id': 999,
+            'temperature': 25,
+            'gender': 'Men'
+        }
+        match_data = app.create_match_data(match_info, self.data_dict)
+        self.assertEqual(match_data['stadium_id'].iloc[0], 999)
+        self.assertEqual(match_data['city_name'].iloc[0], 'Unknown')
+
+    def test_calculate_confidence_with_proba(self):
+        """
+        Test confidence calculation with probability values
+        """
+        # Create a model that returns actual probability values
+        model = MagicMock()
+        model.predict_proba.return_value = np.array([[0.15, 0.75, 0.1]])
+        match_data = pd.DataFrame({'test': [1]})
+        confidence = app.calculate_confidence(model, match_data)
+        self.assertEqual(confidence, 75.0)  # highest probability * 100
 
 if __name__ == '__main__':
     unittest.main()
