@@ -347,5 +347,63 @@ class TestPredictionsApp(unittest.TestCase):
         confidence = app.calculate_confidence(model, match_data)
         self.assertEqual(confidence, 75.0)  # highest probability * 100
 
+
+    def test_predictions_app_functions(self):
+        """
+        Test multiple functions in predictions_app.py to adhere to Pylint's structure.
+        """
+        # Test get_player_info
+        home_player_id, away_player_id, position_code = app.get_player_info(
+            'Brazil', 'Germany', self.sample_players
+        )
+        self.assertEqual(home_player_id, 1001)
+        self.assertEqual(away_player_id, 1002)
+        self.assertEqual(position_code, 'FW')
+        # Test display_match_details
+        match_info = {
+            'home_team': 'Brazil',
+            'away_team': 'Germany',
+            'stadium_name': 'Stadium A',
+            'stadium_id': 101,
+            'temperature': 25
+        }
+        with patch('streamlit.markdown') as mock_markdown:
+            app.display_match_details(match_info, self.data_dict)
+            self.assertTrue(mock_markdown.called)
+        # Test display_team_info
+        team_data = {'name': 'Brazil', 'year': 2018, 'gender': 'Men'}
+        with patch('streamlit.markdown'), patch('streamlit.image'), patch('streamlit.write'):
+            app.display_team_info(team_data, MagicMock(), self.data_dict)
+        # Test display_prediction_results
+        result_data = {'result': 'win', 'confidence': 75.0}
+        with patch('streamlit.markdown'):
+            app.display_prediction_results(match_info, result_data, self.data_dict)
+        # Test display_chart
+        result_df = pd.DataFrame({
+            'Team': ['Brazil (2018)', 'Germany (2018)'],
+            'Outcome': ['Win Probability', 'Draw Probability'],
+            'Probability': [75.0, 25.0]
+        })
+        with patch('streamlit.altair_chart') as mock_chart:
+            app.display_chart(result_df)
+            mock_chart.assert_called_once()
+        # Test display_prediction_context
+        with patch('streamlit.markdown') as mock_markdown:
+            app.display_prediction_context()
+            self.assertTrue(mock_markdown.called)
+        # Test handle_prediction
+        with patch('streamlit.button', return_value=True), patch('streamlit.markdown'):
+            app.handle_prediction(match_info, self.data_dict, MagicMock())
+        # Test configure_match_settings
+        stadium_map = {101: 'Stadium A', 102: 'Stadium B'}
+        with patch('streamlit.selectbox', side_effect=['Men', 'Brazil', 'Germany', 2018, 2018]), \
+             patch('streamlit.slider', return_value=25), \
+             patch('streamlit.markdown'):
+            match_settings = app.configure_match_settings(self.data_dict, stadium_map, MagicMock())
+            self.assertEqual(match_settings['home_team'], 'Brazil')
+            self.assertEqual(match_settings['away_team'], 'Germany')
+            self.assertEqual(match_settings['temperature'], 25)
+            self.assertEqual(position_code, 'FW')
+
 if __name__ == '__main__':
     unittest.main()

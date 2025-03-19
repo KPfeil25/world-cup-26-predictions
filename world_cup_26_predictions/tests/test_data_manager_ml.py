@@ -1,5 +1,18 @@
 '''
-Add
+NAME:
+    test_data_manager_ml.py - Unit tests for the data_manager_ml module
+
+DESCRIPTION:
+    This module contains unit tests for the data management functionality used in
+    the soccer match prediction system. It tests the data loading, feature engineering,
+    and data preparation processes, ensuring that all functions properly handle
+    various input scenarios including edge cases with missing values.
+
+CLASSES:
+    TestDataManagerML - Test suite for data_manager_ml functions
+
+FILE:
+    /tmp/world_cup_26_predictions/tests/test_data_manager_ml.py
 '''
 import os
 import unittest
@@ -13,10 +26,12 @@ from predictions.data_manager_ml import (
 
 class TestDataManagerML(unittest.TestCase):
     '''
-    Add
+    ADD
     '''
     def setUp(self):
-        """Set up test data fixtures"""
+        """
+        ADD
+        """
         # Create sample dataframes for testing
         self.sample_matches = pd.DataFrame({
             'tournament_name': ['Men World Cup', 'Women World Cup'],
