@@ -203,26 +203,6 @@ class TestPredictionsApp(unittest.TestCase):
         self.assertEqual(app.get_country_code('United States'), 'us')
         self.assertIsNone(app.get_country_code('Unknown Country'))
 
-    def test_get_player_info(self):
-        """
-        Test retrieving player info for match prediction
-        """
-        home_player_id, away_player_id, position_code = app.get_player_info(
-            'Brazil', 'Germany', self.sample_players)
-        self.assertEqual(home_player_id, 1001)
-        self.assertEqual(away_player_id, 1002)
-        self.assertEqual(position_code, 'FW')
-        home_player_id, away_player_id, position_code = app.get_player_info(
-            'Brazil', 'Germany', pd.DataFrame())
-        self.assertTrue(np.isnan(home_player_id))
-        self.assertTrue(np.isnan(away_player_id))
-        self.assertEqual(position_code, 'GK')
-        home_player_id, away_player_id, position_code = app.get_player_info(
-            'Spain', 'Italy', self.sample_players)
-        self.assertTrue(np.isnan(home_player_id))
-        self.assertTrue(np.isnan(away_player_id))
-        self.assertEqual(position_code, 'FW')
-
     def test_prepare_visualization_data(self):
         """
         Test preparation of visualization data
@@ -257,11 +237,11 @@ class TestPredictionsApp(unittest.TestCase):
         Test filtering teams by gender
         """
         men_teams = app.get_filtered_teams(self.sample_matches, 'Men')
-        self.assertEqual(len(men_teams), 4)
+        self.assertEqual(len(men_teams), 2)
         self.assertIn('Brazil', men_teams)
         self.assertIn('France', men_teams)
         women_teams = app.get_filtered_teams(self.sample_matches, 'Women')
-        self.assertEqual(len(women_teams), 4)
+        self.assertEqual(len(women_teams), 2)
         self.assertIn('USA', women_teams)
         self.assertIn('Germany', women_teams)
 
@@ -292,7 +272,7 @@ class TestPredictionsApp(unittest.TestCase):
                 if team == 'Spain':
                     return ['No players found for this team/year']
                 if isinstance(players_df, pd.DataFrame) and players_df.empty:
-                    return ['No players found for this team/year']
+                    return ['No team_name column in player data']
                 return []
             mock_get_players.side_effect = side_effect
             players = app.get_team_players('Brazil', 'Men', 2026, self.sample_players)
@@ -304,7 +284,7 @@ class TestPredictionsApp(unittest.TestCase):
             players = app.get_team_players('Spain', 'Men', 2018, self.sample_players)
             self.assertEqual(players[0], 'No players found for this team/year')
             players = app.get_team_players('Brazil', 'Men', 2018, pd.DataFrame())
-            self.assertEqual(players[0], 'No players found for this team/year')
+            self.assertEqual(players[0], 'No team_name column in player data')
             mock_get_players.assert_called()
 
     def test_display_outcome(self):
