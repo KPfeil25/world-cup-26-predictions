@@ -1,0 +1,43 @@
+# In order to build your package, you need to use a "build system".
+# There are a number of supported build systems, but here we'll use
+# the "setuptools" package.
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+# The "project" section contains metadata about the project, like
+# the authors and version. Note that the `dynamic` setting here
+# is very important so that the build system packages up your
+# dependencies!
+[project]
+name = "worldCupPredictions"
+version = "0.0.1"
+authors = [
+  { name="Akshat Pandey" },
+  { name="Jacob Miller" },
+  { name="Kevin Pfeil" },
+  { name="Richard Pallangyo" }
+]
+description = "Analytics and prediction tool for the 2026 World Cup"
+readme = "README.md"
+requires-python = ">=3"
+classifiers = [
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dynamic = ["dependencies"]
+
+# In conjunction with the "dynamic" option above in the "project"
+# section, this tells the build system to add any dependencies
+# specified in requirements.txt.
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+# Where can someone find out more about your project?
+[project.urls]
+Homepage = "https://github.com/KPfeil25/world-cup-26-predictions"
+Issues = "https://github.com/KPfeil25/world-cup-26-predictions/issues"
+
+[tool.setuptools.packages.find]
+where = ["world_cup_26_predictions"]
