@@ -24,7 +24,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler, OneHotEncoder
 from sklearn.pipeline import Pipeline
-from .data_manager import prepare_training_data
+from .data_manager_ml import prepare_training_data
 
 class MatchResultPredictor:
     '''
