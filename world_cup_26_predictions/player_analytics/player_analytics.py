@@ -1,5 +1,77 @@
 """
-Plotly-based functions for analyzing and visualizing player statistics.
+Module: player_analytics.py
+Overview:
+    This module provides a Plotly-based functions for analyzing and visualizing player statistics.
+    It is designed to help gain insights into historical player performance in the World Cup.
+    The insights are presented in interactive visualizations such as bar charts,
+    grouped bar charts, radar charts, and horizontal bar charts.
+    
+Key Functionalities:
+    - Validate Data: Helper functions (_check_required_cols, _prepare_numeric) verify the
+    presence of required columns and convert data types for visual analysis.
+    - Top-N Selection: The _get_top_n function extracts the top N entries based on a given
+    performance metric.
+    - Standardized Visuals: The _bar_chart function centralizes the creation of bar charts
+    with a consistent 
+      style and labeling (via the LABELS dictionary).
+    - Plotting: Functions are provided for a variety of plots:
+        * plot_top_scorers: Visualizes players with the highest total goals.
+        * plot_top_knockout_scorers: Visualizes players with the highest knockout-stage goals.
+        * plot_goals_per_appearance: Displays players with the best goals-per-appearance ratios,
+         with a minimum appearance threshold.
+        * plot_most_awarded_players: Highlights players with the most awards.
+        * plot_best_penalty_conversion: Shows players with the best penalty conversion rates,
+        given a minimum number of attempts.
+        * plot_highest_card_rate: Visualizes players with the highest rate of cards per
+        appearance.
+        * plot_substitution_patterns: Compares substitution patterns by displaying both
+        times subbed on and times subbed off.
+        * plot_position_appearances: Filters and visualizes players by position based on
+        total appearances.
+        * compare_players: Provides a side-by-side DataFrame comparison of selected players.
+        * plot_compare_players_side_by_side: Generates a grouped bar chart for core
+        statistics across players.
+        * plot_comparison_radar: Constructs a radar chart comparing up to five players
+        across multiple metrics such as goals per appearance, knockout goals, and more.
+        * plot_top_clutch_scorers: Creates a horizontal bar chart highlighting players
+        who score in clutch situations (75+ minute goals).
+        * plot_top_impact_players: Visualizes players who have a significant impact
+        after being subbed on.
+    
+Dependencies:
+    - math: Provides mathematical functions for data scaling and transformations.
+    - pandas: Facilitates data manipulation and cleaning through DataFrames.
+    - plotly.express and plotly.graph_objects: Used for creating interactive
+    and aesthetically pleasing plots.
+    - plotly.io: Manages plot configurations (e.g., setting the default white template).
+    
+Constants:
+    - LABELS: A dictionary mapping internal statistic field names to more user-friendly
+    labels for chart axes and titles.
+    - STATS_OF_INTEREST: A list of player statistic fields that are frequently used
+    for filtering and comparison.
+
+Usage Example:
+    To generate a visualization of the top 10 all-time scorers:
+    
+        import pandas as pd
+        import plotly.io as pio
+        import player_stats_visualization as vis
+        
+        # Set the default Plotly template
+        pio.templates.default = "plotly_white"
+        
+        # Load your player statistics DataFrame
+        player_stats = pd.read_csv("player_stats.csv")
+        
+        # Generate the top scorers bar chart
+        fig = vis.plot_top_scorers(player_stats, top_n=10)
+        
+        # Display the chart
+        fig.show()
+        
+For this project, this module is used for integration with the Streamlit web application
+to provide interactive visualizations of player statistics.
 """
 
 import math
@@ -88,7 +160,7 @@ def _bar_chart(df, x_col, y_col, title=""):
         labels=LABELS,
     )
     fig.update_layout(
-        title_x=0.5,
+        title_x=0.3,
         xaxis_title=LABELS[x_col],
         yaxis_title=LABELS[y_col],
         template="plotly_white",
@@ -361,8 +433,8 @@ def plot_comparison_radar(player_stats, selected_players):
             )
         )
     fig.update_layout(
-        title="Player Comparison Radar",
-        title_x=0.5,
+        title="Player Comparison",
+        title_x=0.3,
         polar={"radialaxis": {"visible": True}},
         showlegend=True,
     )
@@ -390,7 +462,7 @@ def plot_top_clutch_scorers(player_stats, top_n=5):
 
     )
     fig.update_layout(
-        title_x=0.5,
+        title_x=0.3,
         xaxis_title="Clutch Goals",
         yaxis_title="Player Name",
         plot_bgcolor="#e5ecf6",
@@ -420,7 +492,7 @@ def plot_top_impact_players(player_stats, top_n=5):
         labels=LABELS,
     )
     fig.update_layout(
-        title_x=0.5,
+        title_x=0.3,
         xaxis_title="Goals After Sub",
         yaxis_title="Player Name",
         plot_bgcolor="#e5ecf6",
