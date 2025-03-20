@@ -14,7 +14,7 @@ def main():
     """
 
     st.set_page_config(page_title="World Cup Player Analytics", layout="wide", page_icon="⚽")
-    st.title("World Cup 2026 Player Analytics")
+    st.title("World Cup 2026 Player and Team Analytics")
 
     # Create tabs for navigation
     tabs = st.tabs(["Player Analytics", "Team Analytics"])

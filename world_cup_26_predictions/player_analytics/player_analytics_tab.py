@@ -206,63 +206,94 @@ def show_extra_analytics(filtered_stats, top_n):
                 st.plotly_chart(fig_fw, use_container_width=True)
 
 
-def show_two_player_comparison(filtered_stats, gender_option):
+def _show_single_player_view(player_stats_df):
     """
-    Renders the two-player comparison section:
-    Player pickers, side-by-side metrics, and radar plot.
+    Display a single player's key metrics in a Streamlit column layout.
+    Assumes the DataFrame has exactly one row of data.
+    """
+    player = player_stats_df.iloc[0]
+    st.markdown(
+        f"<h3 style='text-align:center'>{player['full_name']}</h3>",
+        unsafe_allow_html=True
+    )
+    st.metric("Appearances", f"{int(player['total_appearances'])}")
+    st.metric("Total Goals", f"{int(player['total_goals'])}")
+    st.metric("Knockout Goals", f"{int(player['knockout_goals'])}")
+    st.metric("Total Cards", f"{int(player['total_cards'])}")
+    st.metric("Total Awards", f"{int(player['total_awards'])}")
+
+
+def show_player_selection_and_insights(filtered_stats, gender_option):
+    """
+    Allows the user to select up to 2 players.
+      - If 1 player is selected, shows single-player metrics.
+      - If 2 players are selected, shows side-by-side metrics and radar chart.
     """
     st.markdown("---")
-    st.subheader("Two-Player Comparison", divider="blue")
+    st.subheader("Player Metrics & Comparison", divider="blue")
 
+    # Get all possible names and pick up to 2 defaults if they exist
     all_names = sorted(filtered_stats["full_name"].unique().tolist())
     default_two = get_default_two_players(gender_option, all_names)
-
-    selected_two = st.multiselect(
-        "Select Exactly 2 Players",
+    selected_players = st.multiselect(
+        """Select up to 2 players, one if you want to see single player metrics,
+        and two if you want to see side-by-side player comparison.""",
         all_names,
         default=default_two,
         max_selections=2
     )
 
-    if len(selected_two) < 2:
-        st.info("Please select exactly 2 players.")
+    # If no players selected
+    if not selected_players:
+        st.info("Select at least one player to see metrics.")
         return
 
-    comparison_df = visuals.compare_players(filtered_stats, selected_two)
-    if comparison_df.empty or len(comparison_df) < 2:
-        st.warning("No data or insufficient data to compare these players.")
+    # Pull the data for the selected player(s)
+    comparison_df = visuals.compare_players(filtered_stats, selected_players)
+    if comparison_df.empty:
+        st.warning("No data found for the selected player(s).")
         return
 
-    col_player_one, col_radar, col_player_two = st.columns([2, 3, 2])
-    player_one = comparison_df.iloc[0]
-    player_two = comparison_df.iloc[1]
+    if len(selected_players) == 1:
+        # Show single player metrics
+        _show_single_player_view(comparison_df)
+    elif len(selected_players) == 2:
+        # Show two-player side-by-side comparison
+        col_player_one, col_radar, col_player_two = st.columns([2, 3, 2])
+        player_one = comparison_df.iloc[0]
+        player_two = comparison_df.iloc[1]
 
-    with col_player_one:
-        st.markdown(
-            f"<h3 style='text-align:center'>{player_one['full_name']}</h3>",
-            unsafe_allow_html=True
-        )
-        st.metric("Appearances", f"{int(player_one['total_appearances'])}")
-        st.metric("Total Goals", f"{int(player_one['total_goals'])}")
-        st.metric("Knockout Goals", f"{int(player_one['knockout_goals'])}")
-        st.metric("Total Cards", f"{int(player_one['total_cards'])}")
-        st.metric("Total Awards", f"{int(player_one['total_awards'])}")
+        with col_player_one:
+            st.markdown(
+                f"<h3 style='text-align:center'>{player_one['full_name']}</h3>",
+                unsafe_allow_html=True
+            )
+            st.metric("Appearances", f"{int(player_one['total_appearances'])}")
+            st.metric("Total Goals", f"{int(player_one['total_goals'])}")
+            st.metric("Knockout Goals", f"{int(player_one['knockout_goals'])}")
+            st.metric("Total Cards", f"{int(player_one['total_cards'])}")
+            st.metric("Total Awards", f"{int(player_one['total_awards'])}")
 
-    with col_player_two:
-        st.markdown(
-            f"<h3 style='text-align:center'>{player_two['full_name']}</h3>",
-            unsafe_allow_html=True
-        )
-        st.metric("Appearances", f"{int(player_two['total_appearances'])}")
-        st.metric("Total Goals", f"{int(player_two['total_goals'])}")
-        st.metric("Knockout Goals", f"{int(player_two['knockout_goals'])}")
-        st.metric("Total Cards", f"{int(player_two['total_cards'])}")
-        st.metric("Total Awards", f"{int(player_two['total_awards'])}")
+        with col_player_two:
+            st.markdown(
+                f"<h3 style='text-align:center'>{player_two['full_name']}</h3>",
+                unsafe_allow_html=True
+            )
+            st.metric("Appearances", f"{int(player_two['total_appearances'])}")
+            st.metric("Total Goals", f"{int(player_two['total_goals'])}")
+            st.metric("Knockout Goals", f"{int(player_two['knockout_goals'])}")
+            st.metric("Total Cards", f"{int(player_two['total_cards'])}")
+            st.metric("Total Awards", f"{int(player_two['total_awards'])}")
 
-    with col_radar:
-        radar_fig = visuals.plot_comparison_radar(filtered_stats, selected_two)
-        if radar_fig:
-            st.plotly_chart(radar_fig, use_container_width=True)
+        # Radar chart for comparison
+        with col_radar:
+            radar_fig = visuals.plot_comparison_radar(filtered_stats, selected_players)
+            if radar_fig:
+                st.plotly_chart(radar_fig, use_container_width=True)
+    else:
+        # This else case shouldn't happen given max_selections=2,
+        # but you could handle any error if needed.
+        st.error("Please select at most 2 players.")
 
 
 def show_clutch_and_impact(filtered_stats):
@@ -344,6 +375,6 @@ def run_analytics_tab():
     show_clutch_and_impact(filtered_stats)
 
     # Two-Player Comparison
-    show_two_player_comparison(filtered_stats, gender_option)
+    show_player_selection_and_insights(filtered_stats, gender_option)
     # Trivia
     show_trivia()
