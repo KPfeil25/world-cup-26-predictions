@@ -7,19 +7,31 @@ filtering, and visualization logic. The tests focus on verifying logical correct
 exclude Streamlit UI elements.
 
 Functions Tested:
-- test_get_team_colors(): Tests retrieving team colors for different teams.
-- test_validate_data(): Tests data validation logic for different scenarios.
-- test_create_filters(): Tests filtering logic for different inputs.
-- test_team_performance_pie(): Tests team performance visualization.
-- test_goal_distribution_by_year_type(): Tests goal distribution visualization.
-- test_plot_wc_comparison(): Tests World Cup score distribution plots.
-- test_world_cup_win_percentage_map(): Tests World Cup win percentage map.
-- test_plot_all_teams_summary(): Tests plotting top goal-scoring teams.
+- `test_process_match_data_loads_files()`: Ensures match data is loaded correctly.
+- `test_process_match_data_team_colors()`: Checks if team colors are merged properly.
+- `test_get_team_colors()`: Verifies retrieval of team colors for different teams.
+- `test_get_team_colors_defaults()`: Ensures default colors are used when no data is available.
+- `test_create_filters()`: Tests the filtering logic for different input cases.
+- `test_create_filters_empty_df()`: Ensures proper handling when no data is available.
+- `test_validate_data_existing_team()`: Tests data validation when a team exists.
+- `test_validate_data_missing_team()`: Ensures a user message is displayed when a team is missing.
+- `test_validate_data_missing_years()`: Checks if a user message appears when no years are available.
+- `test_validate_data_two_teams_one_missing()`: Validates behavior when one of two teams is missing.
+- `test_team_performance_pie_single_team()`: Tests team performance pie chart for a single team.
+- `test_team_performance_pie_two_teams()`: Ensures proper chart generation when comparing two teams.
+- `test_goal_distribution_by_year_type()`: Validates goal distribution visualization.
+- `test_goal_distribution_brazil()`: Checks goal distribution visualization for Brazil.
+- `test_plot_wc_comparison_france()`: Tests World Cup score distribution plots for France.
+- `test_plot_wc_comparison_brazil()`: Ensures World Cup score distribution plots for Brazil.
+- `test_world_cup_win_percentage_map()`: Verifies the World Cup win percentage map generation.
+- `test_plot_all_teams_summary()`: Checks the summary visualization of top goal-scoring teams.
+- `test_all_teams_selection()`: Ensures correct behavior when selecting "All Teams."
+- `test_specific_team_selection()`: Validates correct filtering and visualization for specific teams.
 
 """
 
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 import pandas as pd
 from team_analytics.team_analytics_tab import (
     process_match_data,
@@ -31,9 +43,11 @@ from team_analytics.team_analytics_tab import (
     plot_wc_comparison,
     world_cup_win_percentage_map,
     plot_all_teams_summary,
+    run_team_analytics_tab,
 )
 
-
+# pylint: disable=too-many-public-methods
+# disabling because more than 20 tests in TestTeamAnalytics
 class TestTeamAnalytics(unittest.TestCase):
     """Unit tests for team_analytics module."""
 
@@ -213,6 +227,52 @@ class TestTeamAnalytics(unittest.TestCase):
         """Test plotting top goal-scoring teams."""
         fig = plot_all_teams_summary(self.matches_df)
         self.assertGreater(len(fig.data), 0)
+
+    @patch("team_analytics.team_analytics_tab.process_match_data")
+    @patch(
+        "team_analytics.team_analytics_tab.create_filters",
+        return_value=("All Teams", None, None, None),
+    )
+    @patch("team_analytics.team_analytics_tab.display_chart")
+    @patch("team_analytics.team_analytics_tab.show_fun_facts")
+    def test_all_teams_selection(
+        self, mock_fun_facts, mock_display_chart, _mock_create_filters, mock_process
+    ):
+        """Test that selecting 'All Teams' displays global statistics and charts."""
+        mock_process.return_value = (self.matches_df, None)  # Use a real DataFrame
+
+        run_team_analytics_tab()
+
+        # Ensure charts are displayed twice (Win % Map + Top Goal-Scoring Teams)
+        self.assertEqual(mock_display_chart.call_count, 2)
+        mock_fun_facts.assert_called_once()
+
+    @patch(
+        "team_analytics.team_analytics_tab.process_match_data",
+        return_value=(MagicMock(), None),
+    )
+    @patch(
+        "team_analytics.team_analytics_tab.create_filters",
+        return_value=("Brazil", "Germany", "Men", 1950),
+    )
+    @patch("team_analytics.team_analytics_tab.validate_data")
+    @patch(
+        "team_analytics.team_analytics_tab.goal_distribution_by_year_type_side_by_side"
+    )
+    @patch("team_analytics.team_analytics_tab.plot_wc_comparison")
+    @patch("team_analytics.team_analytics_tab.display_chart")
+    @patch("team_analytics.team_analytics_tab.team_performance_pie")
+    def test_specific_team_selection(
+        self, mock_performance_pie, mock_display_chart, _mock_wc_comparison,
+        _mock_goal_dist, mock_validate, _mock_create_filters, _mock_process
+    ):
+        """Test that selecting a specific team validates data and displays team-specific charts."""
+        mock_validate.return_value = self.matches_df
+
+        run_team_analytics_tab()
+
+        self.assertEqual(mock_display_chart.call_count, 2)
+        mock_performance_pie.assert_called_once()
 
 
 if __name__ == "__main__":
