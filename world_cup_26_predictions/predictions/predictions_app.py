@@ -96,6 +96,24 @@ def get_team_award_count(team_name, awards_data):
     return len(team_data)
 
 
+def fix_name(raw_name):
+    """
+    Cleans up a raw name value by trimming and handling
+    not-applicable values.
+    
+    Args:
+        raw_name: The raw name value which might be null or contain "N/A" variants
+        
+    Returns:
+        str: Cleaned name string or empty string if not applicable
+    """
+    if pd.isnull(raw_name):
+        return ""
+    val = str(raw_name).strip().lower()
+    if val in ("not applicable", "n/a", "na", "not available"):
+        return ""
+    return str(raw_name).strip()
+
 def get_team_players(team_name, gender, year, players_data):
     '''
     Gets player roster for a given team and year.
@@ -120,8 +138,10 @@ def get_team_players(team_name, gender, year, players_data):
         gender_filter, na=False)]
     if 'player_name' not in gender_players.columns and 'given_name' in gender_players.columns:
         if 'family_name' in gender_players.columns:
+            gender_players['given_name'] = gender_players['given_name'].apply(fix_name)
+            gender_players['family_name'] = gender_players['family_name'].apply(fix_name)
             gender_players['player_name'] = (gender_players['given_name'].fillna('') + ' ' +
-                                          gender_players['family_name'].fillna(''))
+                                      gender_players['family_name'].fillna(''))
             gender_players['player_name'] = gender_players['player_name'].str.strip()
             gender_players.loc[
                 gender_players['player_name'] == '', 'player_name'] = "Unknown Player"
