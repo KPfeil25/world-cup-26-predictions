@@ -151,3 +151,6 @@ Brings all components together into a **user-friendly web interface**.
 **Assumptions**  
 - All backend components (data pipelines, models) are in working condition and produce valid outputs.  
 - The Streamlit environment can handle the dataset size and provide interactive elements effectively.
+
+## Overall Component Architecture - Overall Flow Chart
+![World Cup Prediction - Overall Flow Chart](../Diagrams/World%20Cup%20Prediction%20-%20Overall%20Flow%20Chart.png)
