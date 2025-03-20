@@ -36,6 +36,7 @@ Functions Tested:
 import unittest
 from unittest.mock import patch, MagicMock
 import pandas as pd
+import plotly.graph_objects as go
 from team_analytics.team_analytics_tab import (
     process_match_data,
     get_team_colors,
@@ -47,7 +48,9 @@ from team_analytics.team_analytics_tab import (
     world_cup_win_percentage_map,
     plot_all_teams_summary,
     run_team_analytics_tab,
+    show_fun_facts,
 )
+
 
 # pylint: disable=too-many-public-methods
 # disabling because more than 20 tests in TestTeamAnalytics
@@ -266,8 +269,14 @@ class TestTeamAnalytics(unittest.TestCase):
     @patch("team_analytics.team_analytics_tab.display_chart")
     @patch("team_analytics.team_analytics_tab.team_performance_pie")
     def test_specific_team_selection(
-        self, mock_performance_pie, mock_display_chart, _mock_wc_comparison,
-        _mock_goal_dist, mock_validate, _mock_create_filters, _mock_process
+        self,
+        mock_performance_pie,
+        mock_display_chart,
+        _mock_wc_comparison,
+        _mock_goal_dist,
+        mock_validate,
+        _mock_create_filters,
+        _mock_process,
     ):
         """Test that selecting a specific team validates data and displays team-specific charts."""
         mock_validate.return_value = self.matches_df
@@ -276,6 +285,190 @@ class TestTeamAnalytics(unittest.TestCase):
 
         self.assertEqual(mock_display_chart.call_count, 2)
         mock_performance_pie.assert_called_once()
+
+    ##increasing test coverage
+
+    @patch("streamlit.warning")
+    def test_validate_data_no_matches(self, mock_warning):
+        """Test validate data when non existenet team is filtered"""
+        filtered_df = validate_data(self.matches_df, "Nonexistent Team")
+        self.assertIsNone(filtered_df)
+        mock_warning.assert_called_once()
+
+    def test_create_filters_gender_filtering(self):
+        """Test filtering logic based on gender selection."""
+        matches_df = pd.DataFrame({"year": [1930, 1991, 1994, 2002, 2022]})
+
+        with patch(
+            "streamlit.radio", side_effect=["Men", "Women", "All"]
+        ) as _mock_radio:
+            _, _, selected_gender_men, _ = create_filters(matches_df)
+            _, _, selected_gender_women, _ = create_filters(matches_df)
+            _, _, selected_gender_all, _ = create_filters(matches_df)
+
+        self.assertEqual(selected_gender_men, "Men")
+        self.assertEqual(selected_gender_women, "Women")
+        self.assertEqual(selected_gender_all, "All")
+
+    def test_validate_data_missing_years_exists(self):
+        """Test if validate_data correctly identifies missing World Cup years."""
+        with patch("streamlit.info") as mock_info:
+            validate_data(self.matches_df, "France", gender="Men")
+
+            mock_info.assert_called()
+
+    def test_validate_data_no_data_found(self):
+        """Test when no data is found for a selected team and year."""
+        matches_df = pd.DataFrame(columns=["home_team_name", "away_team_name", "year"])
+        with patch("streamlit.warning") as mock_warning:
+            validate_data(matches_df, "Argentina", gender="Men", year=1950)
+            mock_warning.assert_called()
+
+    def test_plot_wc_comparison_no_data(self):
+        """Test plot_wc_comparison when no match data exists."""
+        matches_df = pd.DataFrame(columns=["home_team_name", "away_team_name", "year"])
+        with patch("streamlit.warning") as mock_warning:
+            fig = plot_wc_comparison(matches_df, "Brazil", "Men")
+            self.assertIsNone(fig)
+            mock_warning.assert_called()
+
+    def test_world_cup_win_percentage_map_round_2(self):
+        """Test that world_cup_win_percentage_map executes without error and returns a figure."""
+        fig = world_cup_win_percentage_map(self.matches_df)
+        self.assertIsNotNone(fig)
+        self.assertIsInstance(fig, go.Figure)
+
+    def test_show_fun_facts(self):
+        """Test that show_fun_facts runs correctly."""
+        with patch("streamlit.markdown") as mock_markdown:
+            show_fun_facts()
+            mock_markdown.assert_called()
+
+    def test_process_match_data_empty(self):
+        """Test that process_match_data returns empty DataFrames when files are missing."""
+        with patch("pandas.read_csv"):
+            matches_df, teams_df = process_match_data()
+
+            self.assertTrue(matches_df.empty)
+            self.assertTrue(teams_df.empty)
+
+    def test_get_team_colors_defaults_nonexistent_team(self):
+        """Test get_team_colors when team does not exist."""
+        colors = get_team_colors("NonExistentTeam", self.matches_df)
+
+        self.assertEqual(colors["primary"], "blue")
+        self.assertEqual(colors["secondary"], "red")
+        self.assertEqual(colors["tertiary"], "gray")
+
+    def test_create_filters_gender_years(self):
+        """Test that gender selection correctly filters years."""
+        _, _, gender, year = create_filters(self.matches_df)
+
+        self.assertIn(gender, ["All", "Men", "Women"])
+        self.assertTrue(isinstance(year, (str, int)))
+
+    @patch("streamlit.info")
+    def test_validate_data_missing_tournament_years(self, mock_info):
+        """Test validate_data when a team is missing from some tournaments."""
+        validate_data(self.matches_df, "France", gender="Men")
+
+        mock_info.assert_called()
+
+    @patch("streamlit.warning")
+    def test_validate_data_no_data(self, mock_warning):
+        """Test validate_data when no matches are found."""
+        result = validate_data(self.matches_df, "NonExistentTeam", gender="Men")
+
+        self.assertIsNone(result)
+        mock_warning.assert_called()
+
+    def test_plot_wc_comparison_no_data_exists(self):
+        """Test plot_wc_comparison when a team has no matches."""
+        fig = plot_wc_comparison(self.matches_df, "NonExistentTeam", "Men")
+
+        self.assertIsNone(fig)
+
+    @patch("streamlit.warning")
+    def test_validate_data_team_missing_but_team2_exists(self, mock_warning):
+        """Test validate_data when the first team has no data but team_2 does."""
+        filtered_df = validate_data(
+            self.matches_df, "Unknown Team", "Brazil", gender="Men"
+        )
+
+        mock_warning.assert_called_with(
+            "No match data found for Unknown Team in the selected category: "
+            "Men, Year: All Years. Showing only Brazil."
+        )
+
+        self.assertIsNotNone(filtered_df)
+        self.assertIn("Brazil", filtered_df["home_team_name"].values)
+
+    @patch("streamlit.warning")
+    def test_validate_data_team2_missing_but_team1_exists(self, mock_warning):
+        """Test validate_data when the second team has no data but team_1 does."""
+        filtered_df = validate_data(
+            self.matches_df, "France", "Unknown Team", gender="Men"
+        )
+
+        mock_warning.assert_called_with(
+            "No match data found for Unknown Team in the selected category: "
+            "Men, Year: All Years. Showing only France."
+        )
+
+        self.assertIsNotNone(filtered_df)
+        self.assertIn("France", filtered_df["home_team_name"].values)
+
+    def test_plot_wc_comparison_two_countries(self):
+        """Test plot_wc_comparison when two valid countries are provided."""
+        fig = plot_wc_comparison(self.matches_df, "France", "Men", "Brazil")
+
+        self.assertIsNotNone(fig)
+
+        country_data = self.matches_df[
+            (self.matches_df["home_team_name"] == "France")
+            | (self.matches_df["away_team_name"] == "France")
+        ]
+        country_data_2 = self.matches_df[
+            (self.matches_df["home_team_name"] == "Brazil")
+            | (self.matches_df["away_team_name"] == "Brazil")
+        ]
+
+        self.assertFalse(country_data.empty)
+        self.assertFalse(country_data_2.empty)
+        self.assertGreater(
+            country_data["home_team_score"].sum()
+            + country_data["away_team_score"].sum(),
+            0,
+        )
+        self.assertGreater(
+            country_data_2["home_team_score"].sum()
+            + country_data_2["away_team_score"].sum(),
+            0,
+        )
+
+        team_colors_2 = get_team_colors("Brazil", self.matches_df)
+        self.assertIn("primary", team_colors_2)
+
+    def test_goal_distribution_with_two_teams(self):
+        """Test goal distribution when comparing two teams."""
+        fig = goal_distribution_by_year_type_side_by_side(
+            self.matches_df, "France", "Brazil", "All Years", "Men"
+        )
+
+        self.assertIsNotNone(fig)
+
+        team_colors_2 = get_team_colors("Brazil", self.matches_df)
+        self.assertIn("primary", team_colors_2)
+        self.assertIsInstance(team_colors_2["primary"], str)
+
+        for trace in fig.data:
+            self.assertEqual(len(trace.x), len(trace.y))
+
+        france_goals = [trace.y for trace in fig.data if trace.name == "France"]
+        brazil_goals = [trace.y for trace in fig.data if trace.name == "Brazil"]
+
+        self.assertTrue(any(val > 0 for val in france_goals[0]))
+        self.assertTrue(any(val > 0 for val in brazil_goals[0]))
 
 
 if __name__ == "__main__":
