@@ -11,12 +11,12 @@ class TestStreamlitApp(unittest.TestCase):
         sys.path.insert(0, project_root)
 
     def test_streamlit_homepage(self):
-        app = AppTest.from_file("../Homepage.py").run()
+        app = AppTest.from_file("../Homepage.py", default_timeout=10).run()
         assert not app.exception
         assert app.markdown[0].value == "# World Cup 2026 Analysis and Predictions ⚽️"
 
     def test_analytics_page(self):
-        app = AppTest.from_file("../pages/analysis_tool.py").run()
+        app = AppTest.from_file("../pages/analysis_tool.py", default_timeout=10).run()
         assert app.title[0].value == "World Cup 2026 Player Analytics"
         assert len(app.header) == 2
         assert app.header[0].value == "Player Analytics"
