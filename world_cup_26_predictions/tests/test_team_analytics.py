@@ -15,8 +15,10 @@ Functions Tested:
 - `test_create_filters_empty_df()`: Ensures proper handling when no data is available.
 - `test_validate_data_existing_team()`: Tests data validation when a team exists.
 - `test_validate_data_missing_team()`: Ensures a user message is displayed when a team is missing.
-- `test_validate_data_missing_years()`: Checks if a user message appears when no years are available.
-- `test_validate_data_two_teams_one_missing()`: Validates behavior when one of two teams is missing.
+- `test_validate_data_missing_years()`: Checks if a user message appears when no years are 
+    available.
+- `test_validate_data_two_teams_one_missing()`: Validates behavior when one of two teams is 
+    missing.
 - `test_team_performance_pie_single_team()`: Tests team performance pie chart for a single team.
 - `test_team_performance_pie_two_teams()`: Ensures proper chart generation when comparing two teams.
 - `test_goal_distribution_by_year_type()`: Validates goal distribution visualization.
@@ -26,7 +28,8 @@ Functions Tested:
 - `test_world_cup_win_percentage_map()`: Verifies the World Cup win percentage map generation.
 - `test_plot_all_teams_summary()`: Checks the summary visualization of top goal-scoring teams.
 - `test_all_teams_selection()`: Ensures correct behavior when selecting "All Teams."
-- `test_specific_team_selection()`: Validates correct filtering and visualization for specific teams.
+- `test_specific_team_selection()`: Validates correct filtering and visualization for 
+    specific teams.
 
 """
 
