@@ -34,7 +34,7 @@ class TestStreamlitApp(unittest.TestCase):
         Unit tests for the analytics page
         """
         app = AppTest.from_file("../pages/analysis_tool.py", default_timeout=10).run()
-        assert app.title[0].value == "World Cup 2026 Player Analytics"
+        assert app.title[0].value == "World Cup 2026 Player and Team Analytics"
         assert len(app.header) == 1
         assert app.header[0].value == "Player Analytics"
 
