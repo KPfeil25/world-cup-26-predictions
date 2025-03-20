@@ -198,7 +198,6 @@ deck = pdk.Deck(
             radius=50000,
             extruded=True,
             elevation_scale=50,
-            pickable=True,
         ),
     ],
 )
