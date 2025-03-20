@@ -114,3 +114,16 @@ Steps on app:
 1. Within the predictions page, setup a matchup and click on Predict Match Result
 2. Scroll down to get context and confidence in results
    ![Predictions Confidence](example_images/PredictionContext.PNG)
+
+## Retraining the model:
+
+Once the 2026 World Cup comes along and you have access to new data from the jfjelstul dataset, here are the necessary steps to re-train the model:
+
+1. Replace the files in the `data` folder with the new files
+2. Delete the `label_encoder.pkl` and `model.pkl` files from the `predictions` folder
+3. Assuming you are in the root directory, change into the predictions folder using: `cd world-cup-26-predictions/world_cup_26_predictions/predictions`
+4. Run the `train_model.py` script using: `python run train_model.py`
+
+This will create a new model that the app will use to make predictions.
+
+Additionally, if you wish to add more recent temperature values you may do so by adding the cities and their average temperatures from the noaa database to the `temperatures_partitioned` csv file in the `data` folder
