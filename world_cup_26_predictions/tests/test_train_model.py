@@ -1,5 +1,18 @@
 """
-Unit tests for the MatchResultPredictor class in train_model.py
+NAME:
+    test_train_model.py - Unit tests for the MatchResultPredictor class
+
+DESCRIPTION:
+    This module contains unit tests for the MatchResultPredictor class in train_model.py.
+    The tests ensure that data preprocessing, model training, and prediction functionalities
+    work as expected, covering various scenarios including expected transformations,
+    proper model saving/loading, and correct label encoding handling.
+
+CLASSES:
+    TestMatchResultPredictor - Test suite for MatchResultPredictor functions
+
+FILE:
+    /tmp/world_cup_26_predictions/tests/test_train_model.py
 """
 import unittest
 from unittest.mock import patch, MagicMock
@@ -11,11 +24,16 @@ from predictions.train_model import MatchResultPredictor
 
 class TestMatchResultPredictor(unittest.TestCase):
     """
-    Test cases for the MatchResultPredictor class
+    Test suite for the MatchResultPredictor class.
+    This class tests various functionalities including data preprocessing,
+    model training, and match outcome prediction. The tests verify that the
+    correct transformations are applied and that models are trained and used properly.
     """
     def setUp(self):
         """
-        Set up test fixtures
+        Sets up test fixtures with sample data.
+        Initializes a MatchResultPredictor instance and creates sample datasets
+        for training and new match predictions.
         """
         self.predictor = MatchResultPredictor()
         self.sample_data = pd.DataFrame({
@@ -35,7 +53,11 @@ class TestMatchResultPredictor(unittest.TestCase):
         })
 
     def test_create_preprocessor(self):
-        """Test the create_preprocessor method."""
+        """
+        Tests the create_preprocessor method.
+        Ensures that the preprocessor correctly identifies numerical and categorical
+        features, applies proper transformations, and returns a ColumnTransformer.
+        """
         x = self.sample_data.drop('result', axis=1)
         preprocessor = self.predictor.create_preprocessor(x)
         self.assertIsInstance(preprocessor, ColumnTransformer)
@@ -54,7 +76,9 @@ class TestMatchResultPredictor(unittest.TestCase):
     @patch('predictions.train_model.train_test_split')
     def test_train_model(self, mock_train_test_split, mock_joblib_dump):
         """
-        Test the train_model method
+        Tests the train_model method.
+        Ensures that training data is split correctly, the pipeline is constructed,
+        and model artifacts are saved properly using joblib.
         """
         sample_data_with_encoding = self.sample_data.copy()
         sample_data_with_encoding['result_encoded'] = [0, 1, 2, 0]
@@ -76,9 +100,10 @@ class TestMatchResultPredictor(unittest.TestCase):
     @patch('predictions.train_model.joblib.load')
     def test_predict_match(self, mock_joblib_load):
         """
-        Test the predict_match method
+        Tests the predict_match method.
+        Verifies that the model loads correctly, makes predictions, and returns
+        the expected match result labels.
         """
-        # Create mock model and label encoder
         mock_model = MagicMock()
         mock_le = MagicMock()
         mock_model.predict_proba.return_value = np.array([
@@ -95,7 +120,9 @@ class TestMatchResultPredictor(unittest.TestCase):
     @patch('predictions.train_model.prepare_training_data')
     def test_main_execution(self, mock_prepare_data):
         """
-        Test the main execution block
+        Tests the main execution block.
+        Ensures that when train_model.py is run as a script, it correctly loads
+        data, initializes a predictor, and triggers model training.
         """
         mock_prepare_data.return_value = self.sample_data
         with patch.object(MatchResultPredictor, 'train_model') as mock_train_model:

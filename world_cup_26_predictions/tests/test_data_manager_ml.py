@@ -26,13 +26,20 @@ from predictions.data_manager_ml import (
 
 class TestDataManagerML(unittest.TestCase):
     '''
-    ADD
+    Test suite for data_manager_ml module.
+    
+    This class contains unit tests to verify the correctness of functions
+    related to data loading, feature engineering, and preparation in the
+    soccer match prediction pipeline.
     '''
     def setUp(self):
         """
-        ADD
+        Sets up sample data for testing.
+        
+        This method initializes sample pandas DataFrames representing various datasets
+        such as matches, rankings, temperature, awards, and players to be used
+        in test cases.
         """
-        # Create sample dataframes for testing
         self.sample_matches = pd.DataFrame({
             'tournament_name': ['Men World Cup', 'Women World Cup'],
             'match_date': ['2022-11-20', '2023-07-20'],
@@ -71,8 +78,11 @@ class TestDataManagerML(unittest.TestCase):
     @patch('os.path.join')
     @patch('pandas.read_csv')
     def test_load_files(self, mock_read_csv, mock_path_join):
-        """Test load_files function"""
-        # Setup mock returns
+        """
+        Tests the load_files function to ensure proper loading of datasets.
+        Uses mocking to simulate reading CSV files and verifies the correct number
+        of calls and data integrity.
+        """
         mock_path_join.side_effect = lambda *args: '/'.join(args)
         mock_read_csv.side_effect = [
             self.sample_matches,
@@ -82,9 +92,7 @@ class TestDataManagerML(unittest.TestCase):
             self.sample_awards,
             self.sample_players
         ]
-        # Call function
         matches, mens_rankings, womens_rankings, temperature, awards, players = load_files()
-        # Assert results
         self.assertEqual(mock_read_csv.call_count, 6)
         self.assertEqual(len(matches), 2)
         self.assertEqual(len(mens_rankings), 2)
@@ -92,7 +100,6 @@ class TestDataManagerML(unittest.TestCase):
         self.assertEqual(len(temperature), 2)
         self.assertEqual(len(awards), 4)
         self.assertEqual(len(players), 4)
-        # Check paths were constructed correctly
         expected_paths = [
             os.path.join(os.pardir, 'data', 'matches.csv'),
             os.path.join(os.pardir, 'data', 'fifa_mens_rankings.csv'),
@@ -105,7 +112,10 @@ class TestDataManagerML(unittest.TestCase):
             self.assertEqual(mock_read_csv.call_args_list[i][0][0], expected_path)
 
     def test_feature_addition_rankings(self):
-        """Test feature_addition_rankings function"""
+        """
+        Tests the feature_addition_rankings function.
+        Ensures that ranking features are correctly added for home and away teams.
+        """
         df = self.sample_matches.iloc[:1]  # Just take the men's match
         rankings = self.sample_mens_rankings
         result = feature_addition_rankings(df, rankings)
@@ -117,21 +127,26 @@ class TestDataManagerML(unittest.TestCase):
         self.assertEqual(len(result), 1)
 
     def test_feature_addition_temperature(self):
-        """Test feature_addition_temperature function"""
+        """
+        Tests the feature_addition_temperature function.
+        Checks if temperature data is correctly merged based on match date and city.
+        """
         df = pd.DataFrame({
             'match_date': ['2022-11-20'],
             'city_name': ['City1']
         })
         temperature = self.sample_temperature
         result = feature_addition_temperature(df, temperature)
-        # Assertions
         self.assertIn('year', result.columns)
         self.assertIn('avg_temp', result.columns)
         self.assertEqual(result['year'].iloc[0], 2022)
         self.assertEqual(result['avg_temp'].iloc[0], 25.0)
 
     def test_feature_addition_players(self):
-        """Test feature_addition_players function"""
+        """
+        Tests the feature_addition_players function.
+        Verifies that player data is correctly incorporated into the match dataset.
+        """
         df = pd.DataFrame({
             'match_id': [1],
             'home_team_name': ['Team A'],
@@ -144,42 +159,48 @@ class TestDataManagerML(unittest.TestCase):
             'position_code': ['GK', 'GK']
         })
         result = feature_addition_players(df, players)
-        # Assertions
         self.assertIn('home_player_id', result.columns)
         self.assertIn('away_player_id', result.columns)
         self.assertEqual(result['home_player_id'].iloc[0], 101)
         self.assertEqual(result['away_player_id'].iloc[0], 102)
 
     def test_feature_addition_awards(self):
-        """Test feature_addition_awards function"""
+        """
+        Tests the feature_addition_awards function.
+        Ensures award counts are correctly assigned to teams.
+        """
         df = pd.DataFrame({
             'home_team_id': [1],
             'away_team_id': [2]
         })
         awards = self.sample_awards
         result = feature_addition_awards(df, awards)
-        # Assertions
         self.assertIn('home_team_award_count', result.columns)
         self.assertIn('away_team_award_count', result.columns)
         self.assertEqual(result['home_team_award_count'].iloc[0], 2)# Team 1 has 2 awards
         self.assertEqual(result['away_team_award_count'].iloc[0], 1)# Team 2 has 1 award
 
     def test_feature_addition_awards_with_nan(self):
-        """Test feature_addition_awards with NaN values"""
+        """
+        Tests feature_addition_awards when some teams have missing IDs.
+        Confirms that missing values are handled correctly by assigning zero awards.
+        """
         df = pd.DataFrame({
             'home_team_id': [1],
             'away_team_id': [np.nan]
         })
         awards = self.sample_awards
         result = feature_addition_awards(df, awards)
-        # Assertions
         self.assertEqual(result['home_team_award_count'].iloc[0], 2)
         self.assertEqual(result['away_team_award_count'].iloc[0], 0)  # NaN teams have 0 awards
 
     @patch('predictions.data_manager_ml.load_files')
     def test_prepare_training_data(self, mock_load_files):
-        """Test prepare_training_data function"""
-        # Setup mock data
+        """
+        Tests the prepare_training_data function.
+        Ensures all feature engineering steps integrate correctly, producing a
+        properly structured dataset with expected columns.
+        """
         matches = pd.DataFrame({
             'tournament_name': ['Men World Cup', 'Women World Cup'],
             'match_date': ['2022-11-20', '2023-07-20'],
@@ -202,7 +223,6 @@ class TestDataManagerML(unittest.TestCase):
             self.sample_awards,
             self.sample_players
         )
-        # Mock the feature addition functions
         with patch('predictions.data_manager_ml.feature_addition_rankings',
                    return_value=matches.copy()), \
              patch('predictions.data_manager_ml.feature_addition_temperature',
@@ -221,15 +241,13 @@ class TestDataManagerML(unittest.TestCase):
                  home_team_rank=5,
                  away_team_rank=10
              )):
-            # Call function
             result = prepare_training_data()
-            # Assertions
             self.assertIn('home_team_rank', result.columns)
             self.assertIn('away_team_rank', result.columns)
             self.assertIn('home_team_award_count', result.columns)
             self.assertIn('away_team_award_count', result.columns)
             self.assertIn('avg_temp', result.columns)
-            self.assertEqual(len(result.columns), 17)  # Check all expected columns are present
+            self.assertEqual(len(result.columns), 17)
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,5 +1,19 @@
 '''
-Tests for predictions_app
+NAME:
+    test_predictions_app - Unit tests for the World Cup match prediction application
+
+DESCRIPTION:
+    This module contains unit tests for validating the functionality of the 
+    predictions application responsible for predicting World Cup match outcomes.
+    The tests cover data processing, utility functions, model prediction logic,
+    and Streamlit-based display functions.
+
+CLASSES:
+    TestPredictionsApp - Defines a suite of unit tests for functions and methods 
+                         within predictions_app.py
+
+FILE:
+    /tmp/world_cup_26_predictions/tests/test_predictions_app.py
 '''
 import unittest
 from unittest.mock import MagicMock, patch
@@ -9,11 +23,16 @@ import predictions.predictions_app as app
 
 class TestPredictionsApp(unittest.TestCase):
     """
-    Test cases for the World Cup 2026 predictions application
+    Unit tests for the World Cup 2026 predictions application module.
+    This class validates the correctness of individual functions and workflows inside 
+    predictions_app.py, ensuring data processing, prediction logic, and user interface 
+    rendering perform as expected.
     """
     def setUp(self):
         """
-        Set up test fixtures before each test
+        Set up common test fixtures.
+        Initializes sample data for matches, players, rankings, and awards, and mocks 
+        for the model and label encoder to be reused across multiple test cases.
         """
         self.sample_matches = pd.DataFrame({
             'match_id': [1, 2, 3, 4],
@@ -47,13 +66,11 @@ class TestPredictionsApp(unittest.TestCase):
             'team_name': ['Brazil', 'Brazil', 'USA'],
             'award_name': ['Golden Ball', 'Golden Boot', 'Golden Ball']
         })
-        # Mock model and label encoder
         self.mock_model = MagicMock()
         self.mock_model.predict.return_value = np.array([1])
         self.mock_model.predict_proba.return_value = np.array([[0.2, 0.7, 0.1]])
         self.mock_le = MagicMock()
         self.mock_le.inverse_transform.return_value = np.array(['win'])
-        # Create sample data dictionary
         self.data_dict = {
             'matches': self.sample_matches,
             'players': self.sample_players,
@@ -66,7 +83,9 @@ class TestPredictionsApp(unittest.TestCase):
 
     def test_get_stadiums_mapping(self):
         """
-        Test the stadium mapping function
+        Test the mapping of stadium IDs to stadium names.
+        Verifies that the function correctly creates a mapping dictionary from match data.
+        Also tests fallback behavior when 'stadium_name' is missing or when data is empty.
         """
         stadium_map = app.get_stadiums_mapping(self.sample_matches)
         self.assertEqual(len(stadium_map), 4)
@@ -82,7 +101,9 @@ class TestPredictionsApp(unittest.TestCase):
 
     def test_get_available_years(self):
         """
-        Test retrieving available years for a team
+        Test retrieval of available years for a specific team.
+        Checks that years are returned correctly for teams present in the dataset and 
+        fallback logic (e.g., default year) is applied for teams not present.
         """
         years = app.get_available_years('Brazil', 'Men', self.sample_matches)
         self.assertIn(2026, years)
@@ -94,7 +115,9 @@ class TestPredictionsApp(unittest.TestCase):
 
     def test_get_team_award_count(self):
         """
-        Test counting team awards
+        Test calculation of total awards won by a team.
+        Ensures that the correct count of awards is returned for a team, including 
+        handling cases with no awards or an empty dataframe.
         """
         count = app.get_team_award_count('Brazil', self.sample_awards)
         self.assertEqual(count, 2)
@@ -105,7 +128,9 @@ class TestPredictionsApp(unittest.TestCase):
 
     def test_get_team_players(self):
         """
-        Test retrieving player roster for a team
+        Test retrieval of player names for a team and year.
+        Validates that player rosters are correctly extracted based on gender and year, 
+        and that fallback messages are returned for teams with no player data.
         """
         players = app.get_team_players('Brazil', 'Men', 2018, self.sample_players)
         self.assertEqual(len(players), 1)
@@ -118,7 +143,9 @@ class TestPredictionsApp(unittest.TestCase):
 
     def test_get_team_rank(self):
         """
-        Test retrieving team rank
+        Test retrieval of a team's ranking.
+        Checks that the correct team rank is returned when available, and that a 
+        default rank is used when the team is missing from the rankings data.
         """
         rank = app.get_team_rank('Brazil', self.sample_rankings)
         self.assertEqual(rank, 1)
@@ -127,7 +154,9 @@ class TestPredictionsApp(unittest.TestCase):
 
     def test_get_city_name(self):
         """
-        Test retrieving city name for a stadium
+        Test extraction of city name given a stadium ID.
+        Ensures city names are correctly mapped to stadium IDs, with a fallback 
+        to a default city name when the stadium is missing.
         """
         city = app.get_city_name(101, self.sample_matches)
         self.assertEqual(city, 'City A')
@@ -136,7 +165,9 @@ class TestPredictionsApp(unittest.TestCase):
 
     def test_extract_team_data(self):
         """
-        Test extracting team data for predictions
+        Test feature extraction for a team.
+        Verifies that rank and award count are correctly returned for a team 
+        based on gender and tournament data.
         """
         rank, awards = app.extract_team_data('Brazil', 'Men', self.data_dict)
         self.assertEqual(rank, 1)
@@ -147,7 +178,9 @@ class TestPredictionsApp(unittest.TestCase):
 
     def test_create_match_data(self):
         """
-        Test creating match data for prediction
+        Test the creation of a match feature set for model input.
+        Checks that all necessary fields (team names, ranks, awards, etc.) are populated 
+        correctly when creating match data for prediction.
         """
         match_info = {
             'home_team': 'Brazil',
@@ -166,7 +199,10 @@ class TestPredictionsApp(unittest.TestCase):
 
     def test_calculate_confidence(self):
         """
-        Test calculating prediction confidence
+        Test calculation of prediction confidence score.
+        Ensures that the confidence score is computed correctly based on model 
+        probability outputs or falls back to a default confidence when 
+        predict_proba is unavailable.
         """
         match_data = pd.DataFrame({'test': [1]})
         confidence = app.calculate_confidence(self.mock_model, match_data)
@@ -180,7 +216,9 @@ class TestPredictionsApp(unittest.TestCase):
 
     def test_predict_match(self):
         """
-        Test match outcome prediction
+        Test the full match prediction pipeline.
+        Validates that the model returns the correct match outcome and confidence 
+        score using mock predictions.
         """
         match_info = {
             'home_team': 'Brazil',
@@ -197,7 +235,9 @@ class TestPredictionsApp(unittest.TestCase):
 
     def test_get_country_code(self):
         """
-        Test converting team name to country code
+        Test conversion of country names to ISO 3166-1 alpha-2 country codes.
+        Verifies correct ISO code mapping for known countries and ensures None 
+        is returned for unknown or invalid inputs.
         """
         self.assertEqual(app.get_country_code('Brazil'), 'br')
         self.assertEqual(app.get_country_code('United States'), 'us')
@@ -205,9 +245,10 @@ class TestPredictionsApp(unittest.TestCase):
 
     def test_prepare_visualization_data(self):
         """
-        Test preparation of visualization data
+        Test preparation of data used for post-prediction visualizations.
+        Ensures that the output dataframe contains the correct win/loss/draw probabilities 
+        mapped to teams based on the match result.
         """
-        # Test home team win scenario
         match_result = {
             'home_team': 'Brazil',
             'away_team': 'Germany',
@@ -234,7 +275,9 @@ class TestPredictionsApp(unittest.TestCase):
 
     def test_get_filtered_teams(self):
         """
-        Test filtering teams by gender
+        Test filtering teams based on gender.
+        Ensures that teams are filtered correctly for men's or women's tournaments 
+        based on match data.
         """
         men_teams = app.get_filtered_teams(self.sample_matches, 'Men')
         self.assertEqual(len(men_teams), 2)
@@ -247,7 +290,9 @@ class TestPredictionsApp(unittest.TestCase):
 
     def test_prepare_stadium_options(self):
         """
-        Test preparation of stadium selection options
+        Test preparation of stadium selection dropdown options.
+        Verifies correct formatting of dropdown options for stadiums, including fallback 
+        labels when stadium names are missing.
         """
         stadium_map = {101: 'Maracanã', 102: 'Camp Nou'}
         stadium_options, stadium_display = app.prepare_stadium_options(
@@ -260,10 +305,11 @@ class TestPredictionsApp(unittest.TestCase):
 
     def test_get_players_by_year(self):
         """
-        Test helper function for retrieving players by year
+        Test internal helper function for retrieving players by year.
+        Uses mock patching to simulate behavior of _get_players_by_year under 
+        different scenarios, including missing player data.
         """
         with patch('predictions.predictions_app._get_players_by_year') as mock_get_players:
-            # Set up the mock's return values for different test cases
             def side_effect(players_df, team, year):
                 if team == 'Brazil' and year == 2026:
                     return ['Neymar']
@@ -289,9 +335,10 @@ class TestPredictionsApp(unittest.TestCase):
 
     def test_display_outcome(self):
         """
-        Test outcome display function (mock test)
+        Test the display of match outcome results in the Streamlit app.
+        Verifies correct usage of Streamlit success, error, and info messages 
+        depending on match result (home win, away win, draw).
         """
-        # This is a mock test since the function uses streamlit
         with unittest.mock.patch('streamlit.success') as mock_success, \
              unittest.mock.patch('streamlit.error') as mock_error, \
              unittest.mock.patch('streamlit.info') as mock_info:
@@ -312,9 +359,10 @@ class TestPredictionsApp(unittest.TestCase):
 
     def test_create_match_data_edge_cases(self):
         """
-        Test match data creation with edge cases
+        Test match data creation for edge cases.
+        Covers scenarios such as missing rankings or invalid stadium IDs to 
+        ensure fallback values are applied correctly.
         """
-        # Missing team in rankings
         match_info = {
             'home_team': 'Unknown Team',
             'away_team': 'Germany',
@@ -338,19 +386,25 @@ class TestPredictionsApp(unittest.TestCase):
 
     def test_calculate_confidence_with_proba(self):
         """
-        Test confidence calculation with probability values
+        Test confidence score calculation when predict_proba returns actual values.
+        Ensures correct confidence extraction based on the highest probability.
         """
-        # Create a model that returns actual probability values
         model = MagicMock()
         model.predict_proba.return_value = np.array([[0.15, 0.75, 0.1]])
         match_data = pd.DataFrame({'test': [1]})
         confidence = app.calculate_confidence(model, match_data)
-        self.assertEqual(confidence, 75.0)  # highest probability * 100
+        self.assertEqual(confidence, 75.0)
 
 
     def test_predictions_app_functions(self):
         """
-        Test multiple functions in predictions_app.py to adhere to Pylint's structure.
+        Test multiple high-level functions in predictions_app for integration.
+
+        Includes end-to-end tests for:
+        - Player info retrieval
+        - Displaying match details, team info, and prediction results in Streamlit
+        - Displaying visualizations and charts
+        - Handling full prediction flow with Streamlit UI components
         """
         home_player_id, away_player_id, position_code = app.get_player_info(
             'Brazil', 'Germany', self.sample_players
