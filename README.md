@@ -82,9 +82,9 @@ LICENSE
 
 - Clone the repository: `git clone https://github.com/KPfeil25/world-cup-26-predictions.git`
 - Change into the repository: `cd world-cup-26-predictions`
-- Change into python folder: `cd world_cup_26_predictions`
 - Create the environment: `conda env create -f environment.yml`
 - Activate the environment: `conda activate world-cup-predictions-env`
+- Change into python folder: `cd world_cup_26_predictions`
 - Run the application: `streamlit run Homepage.py`
 
 ## Link to Demo
