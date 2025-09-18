@@ -65,11 +65,12 @@ Usage Example:
 """
 
 import os
+from pathlib import Path
 import pandas as pd
 import numpy as np
 
 
-def load_data(data_path="data"):
+def load_data(data_path=None):
     """
     Loads all CSV files from the specified folder into a dictionary of DataFrames.
     Returns a dictionary keyed by CSV filename (minus extension).
@@ -85,6 +86,17 @@ def load_data(data_path="data"):
         A dictionary with keys as filenames (minus .csv extension) and
         values as DataFrames.
     """
+    base_dir = Path(__file__).resolve().parents[1]
+    if data_path is None:
+        target_dir = base_dir / "data"
+    else:
+        provided_path = Path(data_path)
+        if provided_path.exists():
+            target_dir = provided_path
+        else:
+            candidate = base_dir / provided_path
+            target_dir = candidate if candidate.exists() else provided_path
+
     filenames = [
         "award_winners.csv", "host_countries.csv", "players.csv", "substitutions.csv",
         "awards.csv", "manager_appearances.csv", "qualified_teams.csv", "team_appearances.csv",
@@ -98,8 +110,8 @@ def load_data(data_path="data"):
     dfs = {}
     for file_name in filenames:
         name = os.path.splitext(file_name)[0]
-        full_path = os.path.join(data_path, file_name)
-        if os.path.exists(full_path):
+        full_path = target_dir / file_name
+        if full_path.exists():
             dfs[name] = pd.read_csv(full_path)
         else:
             # If file doesn't exist, create an empty DF with no columns

@@ -4,8 +4,12 @@ It has two tabs: Player Analytics and Team Analytics.
 """
 import streamlit as st
 
-from player_analytics.player_analytics_tab import run_analytics_tab
-from team_analytics.team_analytics_tab import run_team_analytics_tab
+from world_cup_26_predictions.player_analytics.player_analytics_tab import (
+    run_analytics_tab,
+)
+from world_cup_26_predictions.team_analytics.team_analytics_tab import (
+    run_team_analytics_tab,
+)
 
 def main():
     """
