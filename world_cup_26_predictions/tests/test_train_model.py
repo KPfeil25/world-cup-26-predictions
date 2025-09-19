@@ -72,8 +72,8 @@ class TestMatchResultPredictor(unittest.TestCase):
         for feature in cat_features:
             self.assertIn(feature, x.columns)
 
-    @patch('predictions.train_model.joblib.dump')
-    @patch('predictions.train_model.train_test_split')
+    @patch('world_cup_26_predictions.predictions.train_model.joblib.dump')
+    @patch('world_cup_26_predictions.predictions.train_model.train_test_split')
     def test_train_model(self, mock_train_test_split, mock_joblib_dump):
         """
         Tests the train_model method.
@@ -97,7 +97,7 @@ class TestMatchResultPredictor(unittest.TestCase):
         args, _ = mock_joblib_dump.call_args_list[1]
         self.assertEqual(args[1], "label_encoder.pkl")
 
-    @patch('predictions.train_model.joblib.load')
+    @patch('world_cup_26_predictions.predictions.train_model.joblib.load')
     def test_predict_match(self, mock_joblib_load):
         """
         Tests the predict_match method.
@@ -117,7 +117,7 @@ class TestMatchResultPredictor(unittest.TestCase):
         mock_le.inverse_transform.assert_called_once()
         self.assertEqual(mock_joblib_load.call_count, 2)
 
-    @patch('predictions.train_model.prepare_training_data')
+    @patch('world_cup_26_predictions.predictions.train_model.prepare_training_data')
     def test_main_execution(self, mock_prepare_data):
         """
         Tests the main execution block.

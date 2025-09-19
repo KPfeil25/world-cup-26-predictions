@@ -309,7 +309,9 @@ class TestPredictionsApp(unittest.TestCase):
         Uses mock patching to simulate behavior of _get_players_by_year under 
         different scenarios, including missing player data.
         """
-        with patch('predictions.predictions_app._get_players_by_year') as mock_get_players:
+        with patch(
+            'world_cup_26_predictions.predictions.predictions_app._get_players_by_year'
+        ) as mock_get_players:
             def side_effect(players_df, team, year):
                 if team == 'Brazil' and year == 2026:
                     return ['Neymar']

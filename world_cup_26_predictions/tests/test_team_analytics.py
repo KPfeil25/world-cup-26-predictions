@@ -52,6 +52,9 @@ from world_cup_26_predictions.team_analytics.team_analytics_tab import (
 )
 
 
+PATCH_PREFIX = "world_cup_26_predictions.team_analytics.team_analytics_tab."
+
+
 # pylint: disable=too-many-public-methods
 # disabling because more than 20 tests in TestTeamAnalytics
 class TestTeamAnalytics(unittest.TestCase):
@@ -234,13 +237,13 @@ class TestTeamAnalytics(unittest.TestCase):
         fig = plot_all_teams_summary(self.matches_df)
         self.assertGreater(len(fig.data), 0)
 
-    @patch("team_analytics.team_analytics_tab.process_match_data")
+    @patch(PATCH_PREFIX + "process_match_data")
     @patch(
-        "team_analytics.team_analytics_tab.create_filters",
+        PATCH_PREFIX + "create_filters",
         return_value=("All Teams", None, None, None),
     )
-    @patch("team_analytics.team_analytics_tab.display_chart")
-    @patch("team_analytics.team_analytics_tab.show_fun_facts")
+    @patch(PATCH_PREFIX + "display_chart")
+    @patch(PATCH_PREFIX + "show_fun_facts")
     def test_all_teams_selection(
         self, mock_fun_facts, mock_display_chart, _mock_create_filters, mock_process
     ):
@@ -254,20 +257,20 @@ class TestTeamAnalytics(unittest.TestCase):
         mock_fun_facts.assert_called_once()
 
     @patch(
-        "team_analytics.team_analytics_tab.process_match_data",
+        PATCH_PREFIX + "process_match_data",
         return_value=(MagicMock(), None),
     )
     @patch(
-        "team_analytics.team_analytics_tab.create_filters",
+        PATCH_PREFIX + "create_filters",
         return_value=("Brazil", "Germany", "Men", 1950),
     )
-    @patch("team_analytics.team_analytics_tab.validate_data")
+    @patch(PATCH_PREFIX + "validate_data")
     @patch(
-        "team_analytics.team_analytics_tab.goal_distribution_by_year_type_side_by_side"
+        PATCH_PREFIX + 'goal_distribution_by_year_type_side_by_side'
     )
-    @patch("team_analytics.team_analytics_tab.plot_wc_comparison")
-    @patch("team_analytics.team_analytics_tab.display_chart")
-    @patch("team_analytics.team_analytics_tab.team_performance_pie")
+    @patch(PATCH_PREFIX + "plot_wc_comparison")
+    @patch(PATCH_PREFIX + "display_chart")
+    @patch(PATCH_PREFIX + "team_performance_pie")
     def test_specific_team_selection(
         self,
         mock_performance_pie,
