@@ -40,13 +40,12 @@ jobs:
       # 4) Install coverage (or any other dev/test dependencies not in environment.yml)
       - name: Install additional development dependencies
         run: |
-          conda install --yes coverage
+          conda install --yes coverage pytest
 
       # 5) Run tests & generate coverage reports.
       - name: Unit tests
         run: |
-          cd world_cup_26_predictions     
-          coverage run -m unittest discover
+          coverage run -m pytest
           coverage report
           coverage lcov
           
@@ -60,8 +59,8 @@ jobs:
         uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          base-path: world_cup_26_predictions
-          path-to-lcov: world_cup_26_predictions/coverage.lcov
+          base-path: .
+          path-to-lcov: coverage.lcov
 
   finish:
      needs: build_test
