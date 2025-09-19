@@ -7,7 +7,7 @@ import unittest
 import pandas as pd
 from plotly.graph_objects import Figure
 
-from player_analytics.player_analytics import (
+from world_cup_26_predictions.player_analytics.player_analytics import (
     STATS_OF_INTEREST,
     plot_top_scorers,
     plot_top_knockout_scorers,

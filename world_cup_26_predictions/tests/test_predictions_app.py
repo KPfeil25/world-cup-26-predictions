@@ -19,7 +19,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 import numpy as np
 import pandas as pd
-import predictions.predictions_app as app
+import world_cup_26_predictions.predictions.predictions_app as app
 
 class TestPredictionsApp(unittest.TestCase):
     """

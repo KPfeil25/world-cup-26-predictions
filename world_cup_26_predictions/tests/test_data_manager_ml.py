@@ -19,7 +19,7 @@ import unittest
 from unittest.mock import patch
 import numpy as np
 import pandas as pd
-from predictions.data_manager_ml import (
+from world_cup_26_predictions.predictions.data_manager_ml import (
     load_files, feature_addition_rankings, feature_addition_temperature,
     feature_addition_players, feature_addition_awards, prepare_training_data
 )

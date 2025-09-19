@@ -37,7 +37,7 @@ import unittest
 from unittest.mock import patch, MagicMock
 import pandas as pd
 import plotly.graph_objects as go
-from team_analytics.team_analytics_tab import (
+from world_cup_26_predictions.team_analytics.team_analytics_tab import (
     process_match_data,
     get_team_colors,
     create_filters,

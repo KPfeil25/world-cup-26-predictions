@@ -20,7 +20,7 @@ import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
-from predictions.train_model import MatchResultPredictor
+from world_cup_26_predictions.predictions.train_model import MatchResultPredictor
 
 class TestMatchResultPredictor(unittest.TestCase):
     """

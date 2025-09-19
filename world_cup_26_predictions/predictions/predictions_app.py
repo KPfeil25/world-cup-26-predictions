@@ -34,7 +34,7 @@ if not hasattr(_column_transformer, "_RemainderColsList"):
     class _RemainderColsList(list):
         """Backward-compatible placeholder for sklearn 1.6 pickles."""
 
-    _column_transformer._RemainderColsList = _RemainderColsList
+    setattr(_column_transformer, "_RemainderColsList", _RemainderColsList)
 
 
 def get_stadiums_mapping(matches_data):
