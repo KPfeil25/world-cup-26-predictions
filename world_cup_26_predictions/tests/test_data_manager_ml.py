@@ -19,7 +19,7 @@ import unittest
 from unittest.mock import patch
 import numpy as np
 import pandas as pd
-from predictions.data_manager_ml import (
+from world_cup_26_predictions.predictions.data_manager_ml import (
     load_files, feature_addition_rankings, feature_addition_temperature,
     feature_addition_players, feature_addition_awards, prepare_training_data
 )
@@ -194,7 +194,7 @@ class TestDataManagerML(unittest.TestCase):
         self.assertEqual(result['home_team_award_count'].iloc[0], 2)
         self.assertEqual(result['away_team_award_count'].iloc[0], 0)  # NaN teams have 0 awards
 
-    @patch('predictions.data_manager_ml.load_files')
+    @patch('world_cup_26_predictions.predictions.data_manager_ml.load_files')
     def test_prepare_training_data(self, mock_load_files):
         """
         Tests the prepare_training_data function.
@@ -223,14 +223,21 @@ class TestDataManagerML(unittest.TestCase):
             self.sample_awards,
             self.sample_players
         )
-        with patch('predictions.data_manager_ml.feature_addition_rankings',
-                   return_value=matches.copy()), \
-             patch('predictions.data_manager_ml.feature_addition_temperature',
-                   return_value=matches.copy()), \
-             patch('predictions.data_manager_ml.feature_addition_players',
-                   return_value=matches.copy()), \
-             patch('predictions.data_manager_ml.feature_addition_awards',
-                   return_value=matches.assign(
+        with patch(
+            'world_cup_26_predictions.predictions.data_manager_ml.feature_addition_rankings',
+            return_value=matches.copy(),
+        ), \
+             patch(
+            'world_cup_26_predictions.predictions.data_manager_ml.feature_addition_temperature',
+            return_value=matches.copy(),
+        ), \
+             patch(
+            'world_cup_26_predictions.predictions.data_manager_ml.feature_addition_players',
+            return_value=matches.copy(),
+        ), \
+             patch(
+            'world_cup_26_predictions.predictions.data_manager_ml.feature_addition_awards',
+            return_value=matches.assign(
                  home_team_award_count=2,
                  away_team_award_count=1,
                  home_player_id=101,

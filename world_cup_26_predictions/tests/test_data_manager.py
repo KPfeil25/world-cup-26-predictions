@@ -7,7 +7,7 @@ import unittest
 import shutil
 import pandas as pd
 
-from player_analytics.data_manager import (
+from world_cup_26_predictions.player_analytics.data_manager import (
     load_data,
     create_advanced_player_stats,
     filter_players,

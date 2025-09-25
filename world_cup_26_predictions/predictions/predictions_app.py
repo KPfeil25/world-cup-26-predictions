@@ -22,12 +22,19 @@ FILE:
     /tmp/world_cup_26_predictions/predictions/predictions_app.py
 '''
 
-import os
+from pathlib import Path
 import joblib
 import altair as alt
 import numpy as np
 import pandas as pd
 import streamlit as st
+from sklearn.compose import _column_transformer
+
+if not hasattr(_column_transformer, "_RemainderColsList"):
+    class _RemainderColsList(list):
+        """Backward-compatible placeholder for sklearn 1.6 pickles."""
+
+    setattr(_column_transformer, "_RemainderColsList", _RemainderColsList)
 
 
 def get_stadiums_mapping(matches_data):
@@ -384,24 +391,22 @@ def load_data():
     '''
     data_dict = {}
     try:
-        path_matches = os.path.join('data', 'matches.csv')
-        path_mens_rankings = os.path.join('data', 'fifa_mens_rankings.csv')
-        path_womens_rankings = os.path.join('data', 'fifa_womens_rankings.csv')
-        path_temps = os.path.join('data', 'temperatures_partitioned.csv')
-        path_awards = os.path.join('data', 'award_winners.csv')
-        path_players = os.path.join('data', 'player_appearances.csv')
-        data_dict['matches'] = pd.read_csv(path_matches)
-        data_dict['mens_rankings'] = pd.read_csv(path_mens_rankings)
-        data_dict['womens_rankings'] = pd.read_csv(path_womens_rankings)
-        data_dict['temperature'] = pd.read_csv(path_temps)
-        data_dict['awards'] = pd.read_csv(path_awards)
-        data_dict['players'] = pd.read_csv(path_players)
+        base_path = Path(__file__).resolve().parents[1]
+        data_dir = base_path / "data"
+        model_dir = base_path / "predictions"
+
+        data_dict['matches'] = pd.read_csv(data_dir / "matches.csv")
+        data_dict['mens_rankings'] = pd.read_csv(data_dir / "fifa_mens_rankings.csv")
+        data_dict['womens_rankings'] = pd.read_csv(data_dir / "fifa_womens_rankings.csv")
+        data_dict['temperature'] = pd.read_csv(data_dir / "temperatures_partitioned.csv")
+        data_dict['awards'] = pd.read_csv(data_dir / "award_winners.csv")
+        data_dict['players'] = pd.read_csv(data_dir / "player_appearances.csv")
         if 'year' not in data_dict['players'].columns and 'match_date' in data_dict[
             'players'].columns:
             data_dict['players']['year'] = pd.to_datetime(data_dict['players'][
                 'match_date']).dt.year
-        data_dict['model'] = joblib.load(os.path.join('predictions', 'model.pkl'))
-        data_dict['le'] = joblib.load(os.path.join('predictions', 'label_encoder.pkl'))
+        data_dict['model'] = joblib.load(model_dir / "model.pkl")
+        data_dict['le'] = joblib.load(model_dir / "label_encoder.pkl")
         return data_dict
     except FileNotFoundError as file_error:
         st.error(f"Required data file not found: {file_error}")

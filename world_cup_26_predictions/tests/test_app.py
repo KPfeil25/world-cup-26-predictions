@@ -18,14 +18,16 @@ class TestStreamlitApp(unittest.TestCase):
         This setup function is necessary so that AppTest knows where to look
         to find the modules that it needs
         """
-        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+        project_root = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), '..', '..')
+        )
         sys.path.insert(0, project_root)
 
     def test_streamlit_homepage(self):
         """
         Unit tests for the homepage UI
         """
-        app = AppTest.from_file("../Homepage.py", default_timeout=10).run()
+        app = AppTest.from_file("../../Homepage.py", default_timeout=10).run()
         assert not app.exception
         assert app.markdown[0].value == "# World Cup 2026 Analysis and Predictions ⚽️"
 

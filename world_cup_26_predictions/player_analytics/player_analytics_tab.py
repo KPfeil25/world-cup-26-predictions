@@ -40,8 +40,12 @@ Usage Example:
 import streamlit as st
 
 # Local imports (relative import from the same package)
-from player_analytics.data_manager import load_data, create_advanced_player_stats, filter_players
-import player_analytics.player_analytics as visuals
+from world_cup_26_predictions.player_analytics.data_manager import (
+    load_data,
+    create_advanced_player_stats,
+    filter_players,
+)
+import world_cup_26_predictions.player_analytics.player_analytics as visuals
 
 
 @st.cache_data

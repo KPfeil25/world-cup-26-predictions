@@ -7,6 +7,7 @@ dependencies:
   - pandas=2
   - plotly=5.24
   - pylint=3.3.3
+  - pydeck=0.8
   - streamlit=1
   - scikit-learn=1
   - joblib=1
